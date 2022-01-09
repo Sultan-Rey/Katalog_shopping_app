@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons style="margin-top:5%;" slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>account</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+
+<ion-content>
+  <div class="container">
+    <h4>Change Password</h4>
+    <ng-form [formGroup]="passwordForm" (ngSubmit)="submit()">
+      <ion-item>
+        <ion-chip>
+          <ion-input type="password" class="field" formControlName="old" placeholder="Old Password"></ion-input>
+                 </ion-chip>
+      </ion-item>
+        <div *ngFor="let error of errorMessages.password" class="padding-left">
+        <ng-container *ngIf="getOldPassword().hasError(error.type) && (getOldPassword().dirty || getOldPassword().touched)">
+          <small class="error-message">{{error.message}}</small>
+        </ng-container>
+      </div>
+      <ion-item>
+        <ion-chip>
+          <ion-input type="password" class="field" formControlName="new" placeholder="New Password"></ion-input>
+           </ion-chip>
+      </ion-item>
+       <div *ngFor="let error of errorMessages.password" class="padding-left">
+        <ng-container *ngIf="getNewPassword().hasError(error.type) && (getNewPassword().dirty || getNewPassword().touched)">
+          <small class="error-message">{{error.message}}</small>
+        </ng-container>
+      </div>
+      <ion-button expand="block" type="submit">Change password</ion-button>
+    </ng-form>
+  </div>
+
+  <div class="container">
+    <ion-button *ngIf="!connected" expand="block" color="secondary" routerLink="/login" routerDirection="forward">Sign In</ion-button>
+    <ion-button *ngIf="connected" expand="block" color="medium" (click)="signout()">Sign Out</ion-button>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar class="footer">
+    <ion-row round>
+      <ion-col offset-1 col-10 routerLink="/home"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="home-outline"></ion-icon>
+        <div class="touch">
+        <h4>Home</h4>
+       </div>  
+    </ion-col>
+      <ion-col offset-1 col-10 routerLink="/cart"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="cart-outline"></ion-icon>
+        <div class="touch">
+          <h4>Cart</h4>
+         </div> 
+      </ion-col>
+      <ion-col offset-1 col-10 routerLink="/profil"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="person-outline"></ion-icon>
+        <div class="touch">
+          <h4>Profil</h4>
+         </div> 
+      </ion-col>
+      <ion-col offset-1 col-10 routerLink="/order"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="cube-outline"></ion-icon>
+        <div class="touch">
+          <h4>Order...</h4>
+         </div> 
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

@@ -1,0 +1,99 @@
+<ion-header mode=ios>
+  <ion-toolbar>
+    <ion-buttons style="margin-top:5%;" slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-searchbar id="searchbar" debounce="500" mode=ios style="color: black !important; width: 80vw; margin: 0 auto; margin-top:5%;" align-center placeholder="search">
+    </ion-searchbar>
+  </ion-toolbar>
+ </ion-header>
+
+<ion-content>
+ 
+  <ion-item-group *ngFor="let order of orders">
+  <ion-item-divider>
+    <ion-label>{{getDate(order.date_order)}}</ion-label>
+  </ion-item-divider>
+    <ion-item *ngFor="let item_order of order.product">
+      <ion-thumbnail size="large" slot="start">
+        <ion-img [src]="item_order.ref" alt="product image"></ion-img>
+        <ion-chip>
+          {{item_order.qty}}
+        </ion-chip>
+      </ion-thumbnail>
+      
+      <ion-label>
+        <h3>{{item_order.name}}</h3>
+         <p>Size : {{item_order.features[0].size}} | Color : <ion-text [style.background]="item_order.features[0].color">&nbsp;</ion-text></p>
+         <ion-text *ngIf="data=='Refunds'" color="danger">
+         <h4 >Refunds Status</h4></ion-text>
+         <h5 *ngIf="data!=='Refunds'">Estimate Delivery date  : </h5>
+          <p *ngIf="data!=='Refunds'">{{getDate(item_order.deliveryDate)}}</p>
+         <ion-buttons>
+           <span style="margin-right: 2px;">
+            <h5>Delivery method : </h5>
+           </span>
+            <ion-badge slot="end" size="small" expand="block" color="warning">{{order.carrier}}
+              <ion-icon name="chevron-down"></ion-icon>
+            </ion-badge>
+         </ion-buttons>
+         <ion-buttons>
+           
+             <!-- <ion-badge (click)="reorder(order)" button color="medium" slot="start">Re-Order
+               <ion-icon name="refresh-outline"></ion-icon>
+             </ion-badge> -->
+           
+           <ion-label slot="end" color="tertiary" style="padding-left: 30px; float: left; margin-top: 5px; "  >
+            <h6>{{order.status}}</h6>
+           </ion-label>
+         </ion-buttons>
+         <ion-button style="margin-top: 10px;" (click)="details(order)" color="medium">Order Details</ion-button>
+       <!--  <ion-buttons style="margin-top: 10px;">
+          
+            <ion-label role="button"  color="secondary" position="fixed">
+              Archive Order</ion-label>
+              &nbsp;|&nbsp;
+            <ion-label role="button" color="secondary" (click)="details(order)" >Details Order</ion-label>
+        </ion-buttons> -->
+         
+         
+      </ion-label>
+    
+      
+      
+      
+    </ion-item>
+    
+  </ion-item-group>
+
+</ion-content>
+<ion-footer>
+  <ion-toolbar class="footer">
+    <ion-row round>
+      <ion-col offset-1 col-10 routerLink="/home"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="home-outline"></ion-icon>
+        <div class="touch">
+        <h4>Home</h4>
+       </div>  
+    </ion-col>
+      <ion-col offset-1 col-10 routerLink="/cart"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="cart-outline"></ion-icon>
+        <div class="touch">
+          <h4>Cart</h4>
+         </div> 
+      </ion-col>
+      <ion-col offset-1 col-10 routerLink="/profil"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="person-outline"></ion-icon>
+        <div class="touch">
+          <h4>Profil</h4>
+         </div> 
+      </ion-col>
+      <ion-col offset-1 col-10 routerLink="/order"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="cube-outline"></ion-icon>
+        <div class="touch">
+          <h4>Order...</h4>
+         </div> 
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

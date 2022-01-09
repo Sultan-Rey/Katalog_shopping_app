@@ -1,0 +1,142 @@
+<ion-header mode=ios>
+  <ion-toolbar>
+    <ion-buttons style="margin-top:5%;" slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-searchbar id="searchbar" debounce="500" mode=ios style="color: black !important; width: 80vw; margin: 0 auto; margin-top:5%;" align-center placeholder="search">
+    </ion-searchbar>
+  </ion-toolbar>
+ </ion-header>
+
+<ion-content>
+  <ion-item-divider>
+    <ion-label>{{data}}</ion-label>
+    <ion-label slot="end" style="margin-right: 10px;">Number of results</ion-label>
+  </ion-item-divider>
+
+  <ion-item *ngIf="data=='hotdeals'">
+    <ion-label>Will end in : </ion-label>
+    <ion-button>
+      <ion-badge color="dark">10</ion-badge>hr
+      <ion-badge color="dark">11</ion-badge>mn
+      <ion-badge color="dark">59</ion-badge>sec
+    </ion-button>
+  </ion-item>
+
+  
+
+    <div class="title ion-padding" *ngIf="data=='Wishlist'">
+      <h2 class="font-bold">Recommended for you</h2>
+    </div>
+  
+    <div class="product-slider" *ngIf="data=='Wishlist'">
+      <ion-slides [options]="{ slidesPerView: 'auto', zoom: false, grabCursor: true }">
+        <ion-slide *ngFor="let deal of hotdeals">
+          <ion-col class="ion-text-left" routerLink="/item-details" routerDirection="forward">
+            <img title="deal" [src]="deal" />
+            <p>product name</p>
+            <h6>product desc</h6>
+            <p>
+              <ion-icon name="star" size="small" slot="start"></ion-icon>
+              <ion-icon name="star" size="small" slot="start"></ion-icon>
+              <ion-icon name="star" size="small" slot="start"></ion-icon>
+              <ion-icon name="star" size="small" slot="start"></ion-icon>
+              <ion-icon name="star" size="small" slot="start"></ion-icon>
+              <ion-icon name="heart-outline" style="padding-left: 30px;" slot="end"></ion-icon>
+            </p>
+                 
+                           <ion-button size="small" color="primary">Add To Cart</ion-button>
+           
+          </ion-col>
+        </ion-slide>
+      </ion-slides>
+    </div>
+
+  
+<div class="container">
+  <ion-grid>
+    <ion-row>
+
+      
+      <ion-col size="6">
+        <ion-card>
+          
+          <ion-card-content style="padding-bottom: 0;">
+            <ion-img style="box-sizing:border-box;" src="assets/images/bike.jpg"></ion-img>
+          </ion-card-content>
+          <ion-card-header>
+            <ion-text color="dark">
+              <h6  style="font-size: 13px; font-weight: bold;">Lace Wig 4X4</h6>
+            </ion-text>
+            <ion-card-subtitle >Your Bike</ion-card-subtitle>
+            <ion-label>
+              <div style="text-align:justify">
+                <div class="circle" >
+                  <span class="dot" style="background: rgb(238, 38, 205);"></span>
+                </div>
+              <div class="circle">
+                <span class="dot" style="background: brown;"></span>
+              </div>
+              <div class="circle" >
+                <span class="dot" style="background: blueviolet;"></span>
+              </div>
+            <div class="circle">
+              <span class="dot" style="background: rgb(26, 79, 192);"></span>
+            </div>
+            <div class="circle">
+              <span class="dot" style="background: rgb(40, 195, 48);"></span>
+            </div>
+              </div> 
+            </ion-label>
+              
+          </ion-card-header>
+          <ion-card-title>
+            <ion-item>
+              <ion-label color="dark">
+                100$
+              </ion-label>
+            
+                <ion-icon size="small" color="danger" slot="end" name="heart-outline"></ion-icon>
+             
+            </ion-item>
+            
+          </ion-card-title>
+        </ion-card>
+      </ion-col>
+      
+    </ion-row>
+  </ion-grid>
+</div>
+ 
+
+</ion-content>
+<ion-footer>
+  <ion-toolbar class="footer">
+    <ion-row round>
+      <ion-col offset-1 col-10 routerLink="/home"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="home-outline"></ion-icon>
+        <div class="touch">
+        <h4>Home</h4>
+       </div>  
+    </ion-col>
+      <ion-col offset-1 col-10 routerLink="/cart"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="cart-outline"></ion-icon>
+        <div class="touch">
+          <h4>Cart</h4>
+         </div> 
+      </ion-col>
+      <ion-col offset-1 col-10 routerLink="/profil"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="person-outline"></ion-icon>
+        <div class="touch">
+          <h4>Profil</h4>
+         </div> 
+      </ion-col>
+      <ion-col offset-1 col-10 routerLink="/order"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="cube-outline"></ion-icon>
+        <div class="touch">
+          <h4>Order...</h4>
+         </div> 
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

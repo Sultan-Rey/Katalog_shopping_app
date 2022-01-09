@@ -1,0 +1,142 @@
+.variation {
+    padding-top: 16px;
+
+    ion-segment-button {
+        color: #2a2a2a;
+        font-size: 10px;
+        font-weight: bold;
+    }
+}
+
+.variation-selector {
+    margin-top: 30px;
+    display: flex;
+    position: relative;
+
+    .active-variation {
+        opacity: 1 !important;
+        z-index: 1 !important;
+    }
+
+    .sizes {
+       
+        align-items: center;
+        position: absolute;
+        width: 100%;
+        opacity: 0;
+        z-index: 0;
+        padding-bottom: 30px;
+
+        div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f3f3f3;
+            transition: 0.5s ease-in-out;
+        }
+
+        .active {
+            color: #ffffff;
+            background-color: var(--ion-color-primary);
+        }
+    }
+
+    .colors {
+        
+        position: absolute;
+        width: 100%;
+        opacity: 0;
+        z-index: 0;
+        padding-bottom: 30px;
+
+        div {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f3f3f3;
+            width: 70px;
+            height: 50px;
+            margin-right: 8px;
+            transition: 0.5s ease-in-out;
+        }
+
+        .active {
+            color: #ffffff;
+            background-color: var(--ion-color-primary);
+        }
+    }
+    .weights {
+        
+        position: absolute;
+        width: 100%;
+        opacity: 0;
+        z-index: 0;
+        padding-bottom: 30px;
+
+        div {
+           
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f3f3f3;
+            transition: 0.5s ease-in-out;
+        }
+
+        .active {
+            color: #ffffff;
+            background-color: var(--ion-color-primary);
+        }
+    }
+}
+
+.seperator {
+    hr {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        background: #e2e2e2;
+    }
+}
+
+#name{
+    display: inline-block;
+    margin: 0;
+    padding:0;
+  }
+  #icon{
+    margin-left: 5px;
+    position: absolute;
+    display: inline-block;
+    color: rgb(255, 208, 80);
+    width: 11px;
+    padding: 0;
+  }
+  #touch h4{
+    display: block;
+    margin-left: 20px;
+    margin-right: auto;
+    align-items: center;
+    font-size: 14px;
+    margin-top:0;
+    margin-bottom:0;
+  }
+  
+.footer{
+    width: 100%;
+    display: block;
+    align-items: center;
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: 5px;
+    border: 0.5px solid rgb(185, 207, 236);
+    --background: rgb(222, 169, 109);
+  }
+  .footerIcon {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    color: rgb(53, 55, 56);
+    align-items: center;
+    font-size: 20px;
+    --ionicon-stroke-width: 46px;
+  }

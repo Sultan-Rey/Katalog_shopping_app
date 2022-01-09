@@ -1,20 +1,430 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Blank
-    </ion-title>
+<ion-header  mode=ios>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      <ion-menu-button class="menu" menu="main-menu"></ion-menu-button>
+    </ion-buttons>
+    <ion-buttons>
+      <ion-title  class="width" mode=ios >
+        <ion-text size="LARGE" color="warning">
+          K</ion-text>
+          <ion-text color="danger"><ion-icon size="LARGE" name=cart></ion-icon></ion-text>
+          <ion-text >ta</ion-text><img title="app header" alt="image icon" class="icon" src="assets/icon/lipstick.png"/><ion-text>og</ion-text>
+        </ion-title>
+    </ion-buttons>
+
   </ion-toolbar>
-</ion-header>
+  <ion-buttons  style=" background: #031432;">
+    <ion-searchbar color="medium" debounce="500" mode=ios style=" width: 150vw; margin: 0 auto;" align-center placeholder="search"></ion-searchbar>
+  </ion-buttons>
+  <div class="ion-padding" style="background: #010f24d3;">
+    <ion-slides id="header-slide" [options]="slidersheading"> 
+  
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
+      <ion-slide>
+      <ion-badge color="warning">
+        <ion-row>
+          <ion-icon name="help"></ion-icon>
+        </ion-row>
+        <ion-row>
+          <ion-label>ask us</ion-label>
+        </ion-row>
+      </ion-badge></ion-slide>
+    
+      <ion-slide routerLink="/payment"  routerDirection="forward">
+      <ion-badge color="dark">
+        <ion-row>
+          <ion-icon name="card"></ion-icon>
+        </ion-row>
+        <ion-row>
+          <ion-label>Payment</ion-label>
+        </ion-row>
+      </ion-badge></ion-slide>
+    
+      <ion-slide (click)="navigateTo('hotdeals')">
+      <ion-badge color="danger">
+        <ion-row>
+          <ion-icon name="pricetags"></ion-icon>
+        </ion-row>
+        <ion-row>
+          <ion-label>Hot Deal</ion-label>
+        </ion-row>
+      </ion-badge></ion-slide>
+    
+      <ion-slide (click)="navigateTo('Wishlist')">
+        <ion-badge color="secondary">
+          <ion-row>
+            <ion-icon name="heart"></ion-icon>
+          </ion-row>
+          <ion-row>
+            <ion-label>Wishlist</ion-label>
+          </ion-row>
+        </ion-badge></ion-slide>
+    
+      <ion-slide (click)="LinkTo('Refunds')">
+        <ion-badge color="warning">
+          <ion-row>
+            <ion-icon name="wallet-outline"></ion-icon>
+          </ion-row>
+          <ion-row>
+            <ion-label>Refunds</ion-label>
+          </ion-row>
+        </ion-badge></ion-slide>
+    
+        <ion-slide>
+          <ion-badge color="warning">
+            <ion-row>
+              <ion-icon name="eye"></ion-icon>
+            </ion-row>
+            <ion-row>
+              <ion-label>Viewed</ion-label>
+            </ion-row>
+          </ion-badge></ion-slide>
+    </ion-slides>
   </div>
+ </ion-header>
+<ion-content [fullscreen]="true">
+ 
+  
+
+
+  <div id="head">
+    
+    
+        <ion-slides ion-img class="ion-slides" pager="true" [options]="sliderOpts">
+         
+          <ion-slide *ngFor="let slide of slides" id="ads">
+                <ion-thumbnail style="--size:small;">
+                <ion-img [src]="slide.url"  [alt]="slide.product"></ion-img>
+              </ion-thumbnail>
+          </ion-slide>
+        
+        </ion-slides> 
+    
+  </div>
+
+  <div class="container">
+    <div class="title ion-padding">
+      <ion-label color="">
+        Shop By Category 
+      </ion-label>
+    </div>
+    
+      <div class="category-slider ion-padding-start">
+        <ion-slides [options]="{ slidesPerView: 'auto', zoom: false, grabCursor: true }">
+          
+          <ion-slide *ngFor="let common of categories">
+              <ion-col (click)="navigateTo(common.name)">
+                <h4>{{ common.name }}</h4>
+                <img src="{{ common.banner }}" />
+              </ion-col>
+          </ion-slide>
+        </ion-slides>
+      </div>
+  </div>
+  
+<ng-container *ngIf="isContainsProduct('hotdeal')" >
+
+  <ion-item>
+    <ion-label>
+      Hot Deals<ion-icon color="danger" name="flame"></ion-icon>
+    </ion-label>
+    <ion-buttons>
+      <ion-button (click)="navigateTo('hotdeals')" color="tertiary">
+        <ion-icon name="arrow-forward-outline"></ion-icon></ion-button>
+    </ion-buttons>
+  </ion-item>
+  
+  <div class="container hotdeal">
+    <ion-slides  [options]="sliderOpts">
+        <ng-container *ngFor="let item of items">
+          <ion-slide *ngIf="item.category=='hotdeal'" >
+            <ion-list >
+             <ion-item>
+               <ion-img [src]="item" slot="start"></ion-img>
+               <ion-item-group>
+                 <ion-label>
+                   <h6>{{item.name}}</h6>
+                 </ion-label>
+                 <ion-buttons>
+                   <ion-text color="danger"><h6>Was {{item.features[0].price}}</h6></ion-text>
+                   <h6>Now <ion-badge>33$</ion-badge></h6>
+                 </ion-buttons>
+               </ion-item-group>
+             </ion-item>
+             <ion-item><p>{{item.description}}</p></ion-item>
+            </ion-list>
+         </ion-slide>
+        </ng-container>
+    </ion-slides>
+  
+    <ion-item>
+      <ion-label color="">
+        Will be ended in :
+      </ion-label>
+      <ion-button color="medium" class="seemore">
+       <ion-chip><b>HR</b></ion-chip><ion-chip><b>MN</b></ion-chip><ion-chip><b>SEC</b></ion-chip>
+      </ion-button>
+    </ion-item>
+  </div>
+
+</ng-container>
+  
+  
+<!-- Product display 1-->
+
+
+  <div *ngFor="let category of categories">
+
+    <ng-container *ngIf="isContainsProduct(category.name) && category.type === 'explore'">
+      <ion-item>
+        <ion-label>
+          <p>{{category.desc}}</p>
+        </ion-label>
+        
+      </ion-item>
+      <div class="container explore">
+        <ion-grid>
+          <ion-row >
+            <ng-container  *ngFor="let item of items">
+            <ion-col size="6" *ngIf="item.category == category.name" >
+              <ion-row>
+                <ion-img [src]="item.ref"></ion-img>
+                <h6><b>{{item.name}}</b></h6>
+              </ion-row>
+                <ion-row>
+                  <h6>
+                    {{item.features[0].price|currency}}
+                  </h6>
+                </ion-row>
+                  
+               
+            </ion-col>
+          </ng-container>
+            </ion-row>
+        </ion-grid>
+    </div>
+      
+    </ng-container>
+
+    <ng-container *ngIf="isContainsProduct(category.name) && category.type === 'product'">
+      <ion-item>
+        <ion-label>
+          <p >{{category.name}}</p>
+        </ion-label>
+        <ion-buttons>
+          <ion-button (click)="navigateTo(category.name)" color="tertiary">see more</ion-button>
+        </ion-buttons>
+      </ion-item>
+   
+      <div class="container product">
+        <ion-grid>
+          <ion-row >
+            <ng-container  *ngFor="let item of items">
+            <ion-col size="6" (click)="goTo(item)" *ngIf="item.category== category.name && item.display.position == 'top'">
+                <ion-card>
+                  <ion-img [src]="item.ref" ></ion-img>
+                  <ion-card-content>
+                    <ion-item-group>
+                      <h6><b>{{item.name}}</b></h6>
+                      <p>
+                        {{item.features[0].price|currency}}
+                      </p>
+                    </ion-item-group>
+                  </ion-card-content>
+                  <ion-badge>10% off</ion-badge>
+                </ion-card>
+            </ion-col>
+          </ng-container>
+            </ion-row>
+
+            <ion-row >
+              <ng-container  *ngFor="let item of items">
+              <ion-col  (click)="goTo(item)" *ngIf="item.category== category.name && item.display.position == 'middle'">
+                  <ion-card>
+                    <ion-img [src]="item.ref" class="middle"></ion-img>
+                    <ion-card-content>
+                      <ion-item-group>
+                        <h6><b>{{item.name}}</b></h6>
+                        <p>
+                          {{item.features[0].price|currency}}
+                        </p>
+                      </ion-item-group>
+                    </ion-card-content>
+                  </ion-card>
+                  <ion-badge>10% off</ion-badge>
+              </ion-col>
+            </ng-container>
+              </ion-row>
+
+              <ion-row >
+                <ng-container  *ngFor="let item of items">
+                <ion-col size="6" (click)="goTo(item)" *ngIf="item.category== category.name && item.display.position == 'bottom'">
+                    <ion-card>
+                      <ion-img [src]="item.ref" ></ion-img>
+                      <ion-card-content>
+                        <ion-item-group>
+                          <h6><b>{{item.name}}</b></h6>
+                          <p>
+                            {{item.features[0].price|currency}}
+                          </p>
+                        </ion-item-group>
+                      </ion-card-content>
+                      <ion-badge>10% off</ion-badge>
+                    </ion-card>
+                </ion-col>
+              </ng-container>
+                </ion-row>
+        </ion-grid>
+    </div>
+    </ng-container>
+    
+    <ng-container *ngIf="isContainsProduct(category.name) && category.type === 'browsing'">
+      <div class="container favorite-items" style="padding-bottom: 20px;" >
+        <fieldset><p>Keep shopping for your favorites items</p></fieldset>
+        <ion-slides  [options]="slidersOpts">
+            
+              <ion-slide *ngFor="let item of items" >
+                <ion-grid >
+                <ion-row class="">
+                  <ion-img [src]="item.ref"></ion-img> 
+                </ion-row>
+                  <ion-row  class="slide-title">
+                    <h6>{{item.name}}</h6>
+                    <h6>{{item.description}}</h6>
+                    <h5>{{item.features[0].price|currency}}</h5>
+                  </ion-row>
+                </ion-grid>
+            </ion-slide>
+           
+        </ion-slides>
+      </div>
+    </ng-container>
+
+  </div>
+
+
+
+
+  <div class="container ads" *ngIf="!isnobrand()">
+
+<div style="text-align:center">
+  <h2 class="grand-title" *ngIf="!isEmpty">Most popular Brands</h2>
+  <div class="circle" *ngFor="let brand of brands">
+    <span class="dot" >
+      <ion-img style="margin-left: auto; margin-right: auto; margin-top:10px;padding: auto; display:block;"
+        [src]="brand.signature"></ion-img></span>
+    <h5>{{brand.manufacturer}}</h5>
+  </div>
+</div>
+
+</div>
+
+
+
+
+
+
+<div class="container2">
+  <h5>Frequently ask and answers</h5>
+  <ul>
+    <li><h6>Shipping and Delivery</h6>
+      <ul>
+        <li>
+          <ion-text>How fast is item shipment ?</ion-text>
+          <ion-item>
+            <p>Item are usually shipped as soon as order is done
+              however depending of the product disponibility, the 
+              shipment can be delay for 1 or 2 days.
+            </p>
+          </ion-item>
+        </li>
+        <li>
+          <ion-text>Do customers are charged for transport fees ?</ion-text>
+          <ion-item>
+            <p>Transport fees are taken in your total order, any other fees will
+              not be required further
+            </p>
+          </ion-item>
+        </li>
+      </ul>
+    </li>
+    <li><h6>KATALOG Star Card ?</h6>
+      <ul>
+        <li>
+          <ion-text>What is KATALOG Star Card </ion-text>
+          <ion-item>
+            <p>KATALOG Star Card is an original payment method available
+              over KATALOG app, fashionstarbeauty.com and all our warehouse.
+            </p>
+          </ion-item>
+        </li>
+      </ul>
+
+    </li>
+    
+  </ul>
+  
+</div>
+
+<ion-buttons></ion-buttons>
+<hr>
+
+<div class="container" id="ask">
+  <h6 class="policy">Do you want to ask us something?</h6>
+  <p id="desc">Ask for anything you want KATALOG administration will answer you.</p>
+  <ion-item>
+    <ion-label position="floating">Question?*</ion-label>
+    <ion-chip size="large" style="width: 100%; margin-top: 10px;">
+      <ion-input [(ngModel)]="question" placeholder="Type your question here..."></ion-input>
+    </ion-chip>
+  </ion-item>
+  <ion-item>
+    <ion-label position="floating">(Optional) if you already have an account</ion-label>
+    <ion-chip size="large" style="width: 100%; margin-top: 10px;">
+      <ion-input [(ngModel)]="contact" placeholder="E-mail or number phone."></ion-input>
+    </ion-chip>
+  </ion-item>
+  <ion-button color="tertiary" (click)="submitquery(contact, question)" expand="block" style="margin-top: 15px;">Submit</ion-button>
+</div>
+
+
+
+
+
+
+
+  
+
 </ion-content>
+
+
+<ion-footer>
+  <ion-toolbar class="footer">
+    <ion-row round>
+      <ion-col offset-1 col-10 routerLink="/home"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="home-outline"></ion-icon>
+        <div class="touch">
+        <h4>Home</h4>
+       </div>  
+    </ion-col>
+      <ion-col offset-1 col-10 routerLink="/cart"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="cart-outline"></ion-icon>
+        <div class="touch">
+          <h4>Cart</h4>
+         </div> 
+      </ion-col>
+      <ion-col offset-1 col-10 routerLink="/profil"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="person-outline"></ion-icon>
+        <div class="touch">
+          <h4>Profil</h4>
+         </div> 
+      </ion-col>
+      <ion-col offset-1 col-10 routerLink="/order"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="cube-outline"></ion-icon>
+        <div class="touch">
+          <h4>Order...</h4>
+         </div> 
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

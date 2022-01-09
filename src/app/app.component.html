@@ -1,3 +1,108 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <ion-menu side="start" menuId="main-menu" contentId="main">
+    <ion-header>
+      <ion-toolbar color="danger">
+        <ion-title>LE MENU</ion-title>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content>
+      <ion-list>
+        <ion-item-divider size="large"><ion-label>ACCES RAPIDE</ion-label></ion-item-divider>
+        <ion-item (click)="navigateTo('Electroniques et Accessoires')">
+          <ion-thumbnail slot="start">
+            <ion-icon size="large" name="phone-portrait-outline" ></ion-icon>
+          </ion-thumbnail>
+          <ion-label>
+            <h4>Electroniques et Accessoires</h4>
+            <p>Telephones, Ordinateurs et objets connectes</p>
+          </ion-label>
+        </ion-item>
+        <ion-item (click)="navigateTo('Sports, Loisirs et Jeux')">
+          <ion-thumbnail slot="start">
+            <ion-icon size="large" name="basketball-outline"></ion-icon>
+          </ion-thumbnail>
+          <ion-label>
+            <h4>Sports, Loisirs et Jeux</h4>
+            <p>Equipement sportif, nutriments </p>
+          </ion-label>
+        </ion-item>
+        <ion-item (click)="navigateTo('Fashion, Vetements')">
+          <ion-thumbnail slot="start">
+            <ion-icon size="large" name="shirt-outline"></ion-icon>
+          </ion-thumbnail>
+          <ion-label>
+            <h4>Fashion, Vetements</h4>
+            <p>Vetements, sous-vetement pour homme et femme</p>
+          </ion-label>
+        </ion-item>
+        <ion-item  (click)="navigateTo('Comestique et Soins')">
+          <ion-thumbnail slot="start">
+            <ion-icon size="large" name="flower-outline"></ion-icon>
+          </ion-thumbnail>
+          <ion-label>
+            <h4>Comestique et Soins</h4>
+            <p>Produits pour soin capillaire et epidermale</p>
+          </ion-label>
+        </ion-item>
+        <ion-item-divider size="large"><ion-label>GERER COMPTE</ion-label></ion-item-divider>
+        <ion-item routerLink="/profil"  routerDirection="forward">
+          <ion-thumbnail slot="start">
+            <ion-icon size="large" name="person-outline"></ion-icon>
+          </ion-thumbnail>
+          <ion-label>
+            <h4>Profile</h4>
+            <p>modifier tes informations de profile</p>
+          </ion-label>
+        </ion-item>
+        <ion-item  routerLink="/cart"  routerDirection="forward">
+          <ion-thumbnail slot="start">
+            <ion-icon size="large" name="cart-outline"></ion-icon>
+          </ion-thumbnail>
+          <ion-label >
+            <h4>Mon Panier</h4>
+            <p>Ton panier de produits</p>
+          </ion-label>
+        </ion-item>
+        <ion-item routerLink="/messages"  routerDirection="forward">
+          <ion-thumbnail slot="start">
+            <ion-icon size="large" name="mail-outline"></ion-icon>
+          </ion-thumbnail>
+          <ion-label>
+            <h4>Boite de Reception</h4>
+            <p>Messages et Notifications</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-thumbnail slot="start" routerLink="/policy"  routerDirection="forward">
+            <ion-icon size="large" name="alert-outline"></ion-icon>
+          </ion-thumbnail>
+          <ion-label>
+            <h4>A Propos</h4>
+            <p>Confidentialite, terms et informations</p>
+          </ion-label>
+        </ion-item>
+        <ion-item-divider size="large"><ion-label>I'M KATALOGER</ion-label></ion-item-divider>
+        <ion-item>
+          <ion-thumbnail slot="start" routerLink="/helpcenter"  routerDirection="forward">
+            <ion-icon size="large" name="gift-outline"></ion-icon>
+          </ion-thumbnail>
+          <ion-label>
+            <h4>Coupon</h4>
+            <p>Promo, coupon, discount code...</p>
+          </ion-label>
+        </ion-item>
+        <ion-item>
+          <ion-thumbnail slot="start" routerLink="/helpcenter"  routerDirection="forward">
+            <ion-icon size="large" name="help-circle-outline"></ion-icon>
+          </ion-thumbnail>
+          <ion-label>
+            <h4>Help Center</h4>
+            <p>Any issue, questions and more...</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-content>
+  </ion-menu>
+
+  <ion-router-outlet id="main"></ion-router-outlet>
 </ion-app>

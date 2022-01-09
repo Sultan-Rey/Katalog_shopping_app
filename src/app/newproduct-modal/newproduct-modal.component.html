@@ -1,0 +1,163 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title> ADD PRODUCT </ion-title>
+    <ion-buttons slot="end">
+      <ion-back-button></ion-back-button>
+      <ion-button (click)="modalDismiss()" color="primary">Close</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+ 
+  <ion-item-divider color="tertiary">
+    <ion-label small="large">Product Informations</ion-label>
+  </ion-item-divider>
+
+  <ion-item>
+    <ion-label position="stacked">Product Name *</ion-label>
+    <ion-input  inputmode="text" [(ngModel)]="newProduct.name"  placeholder="Enter the name of this product...">
+    </ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Description *</ion-label>
+    <ion-input  [(ngModel)]="newProduct.description"   inputmode="text" placeholder="Short description..."></ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">Brand</ion-label>
+    <ion-input [(ngModel)]="newProduct.brand"   inputmode="text" placeholder="Manufacturer or brand name..."></ion-input>
+  </ion-item> 
+
+  <ion-item-divider color="tertiary">
+    <ion-label small="large">Features and Price *</ion-label>
+    <ion-chip  slot="end">
+     Price Only
+      <ion-checkbox color="danger" [(ngModel)]="ispriceOnly"></ion-checkbox>
+    </ion-chip>
+  </ion-item-divider>
+
+  <div>
+    <ion-badge color="medium" class="ion-padding">
+    <ion-button shape="round"  class="ion-padding">
+      <ion-icon slot="icon-only"  name="image" (click)="addPictures()"></ion-icon>
+    </ion-button>
+    <ion-buttons class="ion-padding">
+      <ion-label>Product Pictures</ion-label>
+    </ion-buttons>
+    </ion-badge>
+  </div>
+
+  <ion-item>
+    <ion-item-group>
+      <ion-buttons >
+        <ion-chip *ngIf="!ispriceOnly">
+          <label for="color">Set Color</label>
+           <input type='color' name="color" placeholder="Color" [(ngModel)]="feature.color"/>
+         </ion-chip>
+         <ion-chip *ngIf="!ispriceOnly">
+             <ion-input  inputmode="text" placeholder="put a size" [(ngModel)]="feature.size"></ion-input>
+           </ion-chip>
+           <ion-chip color="dark">
+           <ion-input  inputmode="number" [(ngModel)]="feature.price" placeholder="Price($)"></ion-input>
+            </ion-chip>
+      </ion-buttons>
+      <ng-container *ngIf="isfeatures">
+       
+          <ion-buttons *ngFor="let setfeatures of newProduct.features">
+            <ion-item>
+            <ion-chip>
+              <ion-chip><button [style.background]="setfeatures.color"> Color </button></ion-chip><ion-chip>Size : {{setfeatures.size}}</ion-chip><ion-chip>Price : {{setfeatures.price|currency}}</ion-chip>
+            </ion-chip>
+          </ion-item>
+          </ion-buttons>
+      
+      </ng-container>
+     
+     <ion-buttons style="border-bottom: 2px solid rgb(235, 243, 243);" expand="block">
+        <ion-button shape="round"  size="icon-only"  color="dark" (click)="savefeature(feature)">
+        <ion-icon name="add" ></ion-icon>Add Features</ion-button>
+     </ion-buttons>
+        </ion-item-group>
+       
+  </ion-item>
+
+  <ion-item-divider color="tertiary">
+    <ion-label small="large"> About this product</ion-label>
+  </ion-item-divider>
+  <ion-item>
+    <ion-textarea [(ngModel)]="newProduct.about"placeholder="Write a large description about the product">
+    
+    </ion-textarea>
+  </ion-item>
+
+
+  <ion-item-divider color="tertiary">
+    <ion-label small="large">Category and Quantity **</ion-label>
+  </ion-item-divider>
+  <ion-item>
+    <ion-label>Category *</ion-label>
+    <ion-select >
+      <ion-select-option >sexy</ion-select-option>
+    </ion-select>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Quantity *</ion-label>
+    <ion-input [(ngModel)]="newProduct.qty"  inputmode="number"  placeholder="Quantity of product available"></ion-input>
+  </ion-item>
+
+
+
+  <ion-item-divider color="tertiary">
+    <ion-label small="large">Shipment and Policy *</ion-label>
+  </ion-item-divider>
+
+  <ion-item>
+    <ion-label position="stacked">Shipment</ion-label>
+    <ion-input [(ngModel)]="newProduct.shipment"  inputmode="text" placeholder="Product departure point" ></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Product Policy *</ion-label>
+    <ion-item-group>
+      <ion-chip name="Inactive" [id]="policy"  (click)="selectpolicy(policy)"  *ngFor="let policy of policy">
+        <ion-checkbox></ion-checkbox>
+        {{policy}}</ion-chip>
+    </ion-item-group>
+    </ion-item>
+
+    <ion-item-divider color="tertiary">
+      <ion-label small="large">Display and Availability **</ion-label>
+    </ion-item-divider>
+    <ion-item>
+      <ion-label position="stacked">Display</ion-label>
+      <ion-item-group>
+        <ion-buttons>
+          <ion-chip> 
+            <ion-checkbox name="check" [(ngModel)]="display.showinhome"></ion-checkbox>
+             Show in Home
+            </ion-chip>
+            <ion-button>
+              <ion-label>Position</ion-label>
+              <ion-select [(ngModel)]="display.position">
+                <ion-select-option [value]="position"  *ngFor="let position of styleposition">{{position}}</ion-select-option>
+              </ion-select>
+            </ion-button>
+        </ion-buttons>
+        
+        <ion-chip for="check"> 
+          <ion-checkbox name="check" [(ngModel)]="display.setactive" checked="true"></ion-checkbox>
+           Set Active
+          </ion-chip>
+      </ion-item-group>
+      </ion-item>
+      <ion-item>
+        <ion-label>Availability *</ion-label>
+        <ion-select [(ngModel)]="newProduct.availability">
+          <ion-select-option  *ngFor="let available of availibility" [value]="available">{{available}}</ion-select-option>
+        </ion-select>
+      </ion-item>
+      <div>
+        <ion-button color="warning" (click)="btnCreateProduct(newProduct, display)" expand="block">Add This Product</ion-button>
+      </div>
+    </ion-content>

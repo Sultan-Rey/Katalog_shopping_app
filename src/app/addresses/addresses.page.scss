@@ -1,0 +1,14 @@
+input[type='radio']{
+    width: 18px;
+    height: 18px;
+}
+section:not(.full-width),
+  .full-width > header {
+    padding: 0 10px;
+  }
+
+  h6{
+    font-weight: bold;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-size: 14px;
+  }
