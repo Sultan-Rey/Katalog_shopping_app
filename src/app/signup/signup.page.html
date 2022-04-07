@@ -138,7 +138,7 @@
     <ion-item>
       <ion-label position="stacked">Default Payment Method</ion-label>
       <ion-input readonly="true" placeholder="Pay easily by Card, and More..." formControlName="method" [value]="method" color="primary"></ion-input>
-      <ion-button fill="clear" slot="end" (click)="showMethod()">select</ion-button>
+      <ion-button fill="clear" slot="end">select</ion-button>
     </ion-item>
     <div *ngFor="let error of errorMessages.method" style="padding-left: 5%">
       <ng-container *ngIf="getMethod().hasError(error.type) && (getMethod().dirty || getMethod().touched)">

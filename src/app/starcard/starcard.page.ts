@@ -7,7 +7,8 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { isNullOrUndefined } from 'util';
 import {Storage} from '@ionic/storage';
 import { Paymethod } from 'src/models/paymethod';
-import { PaymentService } from '../payment.service';
+import * as firebase from 'firebase';
+import { FirestoreDataService } from '../firestore-data.service';
 
 @Component({
   selector: 'app-starcard',
@@ -16,11 +17,13 @@ import { PaymentService } from '../payment.service';
 })
 export class StarcardPage implements OnInit {
 
-  connected: boolean=false;
+  connected: boolean;
+  isRegistred: boolean;
   cardCollection: AngularFirestoreCollection<StarCard>;
   obcard: Observable<StarCard[]>;
   card: StarCard[];
   paymentMethod: Paymethod[];
+  defaultMethod: Paymethod;
   devise = ['USD','HTG'];
   starReedemUSD = ['20','50','100','200','250','500'];
   starReedemHTG = ['250','500','750','1000','5000','10.000'];
@@ -30,8 +33,8 @@ export class StarcardPage implements OnInit {
     slidesPerView: 2,
   };
   starcard: StarCard;
-  constructor(private afirestore: AngularFirestore, private alertcontroller:AlertController, private payment: PaymentService,
-   private storage:Storage, private loadingcontroller: LoadingController, private fireAuth: AngularFireAuth) {
+  constructor(private afirestore: AngularFirestore, private alertcontroller:AlertController,
+   private storage:Storage, private loadingcontroller: LoadingController, private fireAuth: AngularFireAuth, private fsdataService: FirestoreDataService) {
       this.starcard = {} as StarCard;
       this.starcard.transactions = [];
       this.starcard.reedem = [];
@@ -41,7 +44,7 @@ export class StarcardPage implements OnInit {
 
   ngOnInit() {
     this.fireAuth.authState.subscribe(auth=>{
-      if (!auth){
+      if (!auth.emailVerified){
         this.connected = false;
       }else {
         this.connected = true;
@@ -55,6 +58,13 @@ export class StarcardPage implements OnInit {
     
     this.storage.get("paymethod").then((data:Paymethod[])=>{
         this.paymentMethod= data;
+        if(this.paymentMethod.length!==0 && this.paymentMethod!==null){
+          this.paymentMethod.forEach(method=>{
+            if(method.default == true){
+              this.defaultMethod = method;
+            }
+          })
+        }
     }).catch(err=>{
       console.log("cart not found or empty");
     });
@@ -67,7 +77,7 @@ export class StarcardPage implements OnInit {
         let paypal = this.paymentMethod.find((paymethod)=>paymethod.method=='PayPal' && paymethod.default==true);
         let mc = this.paymentMethod.find((paymethod)=>paymethod.method=='MasterCard'&& paymethod.default==true);
         if(!isNullOrUndefined(paypal)){
-          this.payment.payWithPaypal(amount, btoa('Reedem'));
+        
         }else if(!isNullOrUndefined(mc)){
 
         }else{
@@ -95,29 +105,27 @@ export class StarcardPage implements OnInit {
   }
   async getCardAccount(){
     let userId = (await this.fireAuth.currentUser).uid
-   
     this.card = new Array();
     this.cardCollection = this.afirestore.collection('starcard');
     this.cardCollection.doc(userId).snapshotChanges().subscribe(card=>{
+      this.isRegistred=true;
       this.starcard.id = card.payload.get("id");
       this.starcard.devise = card.payload.get("devise");
       this.starcard.amount = card.payload.get("amount");
       this.starcard.reedem = card.payload.get("reedem");
       this.starcard.transactions = card.payload.get("transactions");
       this.starcard.activation = card.payload.get("activation");
-    });
+    }).unsubscribe();
     
   }
 
   async register(card: StarCard){
-    let reedems: Reedeem = {} as Reedeem;
-    let transactions: Transactions = {} as Transactions;
     this.cardCollection = this.afirestore.collection('starcard');
     if(card.devise!=="" && card.devise!==null){
       this.starcard.id = this.crypto();
       this.starcard.amount = 0.00;
-      this.starcard.reedem.push(reedems)
-      this.starcard.transactions.push(transactions);
+      this.starcard.reedem =[]
+      this.starcard.transactions =[]
       this.starcard.activation = true;
       this.cardCollection.doc((await this.fireAuth.currentUser).uid).set(this.starcard).then( async ()=>{
         const loading = await this.loadingcontroller.create({
@@ -127,7 +135,16 @@ export class StarcardPage implements OnInit {
         }).then((loaded)=>{
           loaded.present();
           loaded.onDidDismiss().then((dismiss)=>{
+            this.isRegistred=true;
             console.log(dismiss);
+            let starmethod: Paymethod = {
+              id: this.starcard.id,
+              method: 'StarCard',
+              provider: 'KATALOG',
+              credential: {},
+              default: false
+            }
+            this.saveMethod(starmethod);
             this.getCardAccount();})
         });
         
@@ -145,6 +162,35 @@ export class StarcardPage implements OnInit {
       });
       await alert.present();
     }
+      }
+
+      
+
+
+      saveMethod(method: Paymethod){
+        let isAdded: boolean = false;
+       this.storage.get("paymethod").then((data: Paymethod[]) => {
+         if (data === null || data.length === 0) {
+           data = [];
+           data.push(method);
+         } else {
+           for (let item of data) {
+             if (item.id === method.id) {
+             
+           item.method = method.id;
+           item.provider= method.provider;
+           item.credential.options = method.credential.options;
+           item.credential.code = method.credential.code;
+           item.credential.email = method.credential.email;
+           item.credential.phone = method.credential.phone;
+               isAdded = true;
+             }
+           }
+           if (!isAdded) {
+             data.push(method);
+           }
+         }
+       });
       }
  
       selected(name:string){

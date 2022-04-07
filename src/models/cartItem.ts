@@ -1,6 +1,16 @@
-import { Features, Product } from "./product";
 
 export interface CartItem{
-    product: Product;
-    item_qty: number;
+    picture: string;
+    name: string;
+    brand: string;
+    description: string;
+    category: string;
+    qty: number;
+    size ?: string;
+    color ?: string;
+    shippingFee: number;
+    deliveryFee: number;
+    taxFee: number;
+    deliveryDate: Date;
+    price: number;
 }

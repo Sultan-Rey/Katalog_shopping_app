@@ -32,10 +32,6 @@ const routes: Routes = [
     loadChildren: () => import('./signup/signup.module').then( m => m.SignupPageModule)
   },
   {
-    path: 'profil',
-    loadChildren: () => import('./profil/profil.module').then( m => m.ProfilPageModule)
-  },
-  {
     path: 'verification',
     loadChildren: () => import('./verification/verification.module').then( m => m.VerificationPageModule)
   },
@@ -52,17 +48,10 @@ const routes: Routes = [
     loadChildren: () => import('./helpcenter/helpcenter.module').then( m => m.HelpcenterPageModule)
   },
   {
-    path: 'payment',
-    loadChildren: () => import('./payment/payment.module').then( m => m.PaymentPageModule)
-  },
-  {
     path: 'settings',
     loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
   },
-  {
-    path: 'addresses',
-    loadChildren: () => import('./addresses/addresses.module').then( m => m.AddressesPageModule)
-  },
+  
   {
     path: 'account',
     loadChildren: () => import('./account/account.module').then( m => m.AccountPageModule)
@@ -70,10 +59,6 @@ const routes: Routes = [
   {
     path: 'historic',
     loadChildren: () => import('./historic/historic.module').then( m => m.HistoricPageModule)
-  },
-  {
-    path: 'liked',
-    loadChildren: () => import('./liked/liked.module').then( m => m.LikedPageModule)
   },
   {
     path: 'starcard',
@@ -88,9 +73,13 @@ const routes: Routes = [
     loadChildren: () => import('./order-details/order-details.module').then( m => m.OrderDetailsPageModule)
   },
   {
-    path: 'message-box',
-    loadChildren: () => import('./message-box/message-box.module').then( m => m.MessageBoxPageModule)
+    path: 'searchquery',
+    loadChildren: () => import('./searchquery/searchquery.module').then( m => m.SearchqueryPageModule)
   },
+  {
+    path: 'policy',
+    loadChildren: () => import('./policy/policy.module').then( m => m.PolicyPageModule)
+  }
  
 ];
 

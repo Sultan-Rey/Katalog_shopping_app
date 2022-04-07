@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore, DocumentData } from '@angular/fire/firestore';
 import { NavigationExtras, Router, ActivatedRoute } from '@angular/router';
 import { Storage } from '@ionic/storage';
+import { Observable } from 'rxjs';
 import { Order } from 'src/models/order';
 import { User } from 'src/models/user';
 import { isNullOrUndefined } from 'util';
@@ -14,14 +15,12 @@ import { FirestoreDataService } from '../firestore-data.service';
 })
 export class OrderPage implements OnInit {
   data: string;
-  orders: Order[];
+  orders: Observable<DocumentData[]>;
   user: User;
   userType: string='';
   constructor(private router: Router, private route: ActivatedRoute, private afirestore: AngularFirestore, 
     private fdservice: FirestoreDataService, private storage: Storage) { 
-      this.orders = [];
-      this.checkTypeUser();
-     
+     this.fdservice.getFirestoreOrder().then((your_order)=> this.orders = your_order);
   }
 
   ngOnInit() {
@@ -38,39 +37,6 @@ export class OrderPage implements OnInit {
       return dating.toDateString() ;
     }
 
-    checkTypeUser(){
-      this.storage.get("user").then((logUser: User) => {
-        
-        if(!isNullOrUndefined(logUser)){
-          if (logUser.type == "ADMIN") {
-            this.user = this.fdservice.getUsers().find((user) => { user.type == "ADMIN"; });
-            if (!isNullOrUndefined(this.user)) {
-              if (this.user.password == logUser.password && this.user.email == logUser.email) {
-                this.orders = this.fdservice.getOrderAsadmin();
-                this.userType = "ADMIN";
-              }
-            }
-          } else if (logUser.type == "ASSISTANT") {
-            this.user = this.fdservice.getUsers().find((user) => { user.type == "ASSISTANT"; });
-            if (!isNullOrUndefined(this.user)) {
-              if (this.user.password == logUser.password && this.user.email == logUser.email) {
-                this.orders = this.fdservice.getOrderAsadmin();
-                this.userType = "ASSISTANT";
-              }
-            }
-          } else {
-            
-            this.fdservice.getFirestoreOrder().then((order) => { this.orders = order})
-            this.userType = "USER";
-          }    
-        }
-        
-
-
-      });
-
-
-    }
 
    /*  reorder(order:Order){
       const navigationExtras:NavigationExtras = {

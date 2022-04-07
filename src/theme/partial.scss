@@ -28,22 +28,7 @@
 }
 
 //container in page body
-.container {
-    text-align: center;
-  
-    left: 0;
-    right: 0;
-    position: relative;
-    border-bottom: 5px solid rgb(239, 239,239);
-    h6{
-      text-align: justify;
-      padding: 0;
-      margin-top: 0;
-      margin-left: 3px;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-  
-  }
+
 
 //Footer style
 .footer{
@@ -53,7 +38,6 @@
     margin-right: auto;
     margin-left: auto;
     margin-top: 5px;
-    border: 0.5px solid rgb(185, 207, 236);
     --background:#031432;
   }
   .footerIcon {
@@ -67,7 +51,7 @@
   }
   .touch h4{
     display: block;
-    margin-left: 20px;
+    margin-left: 30px;
     margin-right: auto;
     align-items: center;
     font-size: 14px;

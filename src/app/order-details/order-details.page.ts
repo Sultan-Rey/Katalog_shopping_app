@@ -58,20 +58,23 @@ export class OrderDetailsPage implements OnInit {
 
   async changeAddress(address: string, orderId: string){
     
-    const alert = await this.alertcontroller.create({
-      cssClass: 'my-custom-class',
-      header: 'Alert',
-      subHeader: 'Subtitle',
-      message: 'Shipping address will change to.'+address+' please verify your message box for confirmation',
-      buttons: ['Ok']
-    });
-    await alert.present();
+   
     this.msg.author = (await this.fireAuth.currentUser).uid;
     this.msg.object = "ORDER_UPDATE";
     this.msg.content = address;
     this.msg.destination = "ADMIN";
     this.msg.date_msg = new Date(Date.now());
     this.afirestore.collection("messages").add(this.msg);
+    this.afirestore.collection('message').doc("ADMIN_ONE").collection('update').add(this.msg).then(async ()=>{
+      const alert = await this.alertcontroller.create({
+        cssClass: 'my-custom-class',
+        header: 'Alert',
+        subHeader: 'Subtitle',
+        message: 'Shipping address will change to.'+address+' please verify your message box for confirmation',
+        buttons: ['Ok']
+      });
+      await alert.present();
+    })
     }
 
   async cancelOrder(data: Order){

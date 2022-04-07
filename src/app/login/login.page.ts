@@ -43,18 +43,15 @@ export class LoginPage implements OnInit {
         cssClass: 'my-custom-class',
         message: 'Please wait...'
         
-       }).then((control)=>{
+       }).then( async (control)=>{
          control.present();
          
          this.afAuth.signInWithEmailAndPassword(data.mail.trim(), data.password.trim()).then(async () => {
           this.dataUser = {mail: '',password: ''};
-          if((await this.afAuth.currentUser).emailVerified){
-            this.afirestore.collection("user").doc((await this.afAuth.currentUser).uid).get().subscribe(user=>{
+            /* this.afirestore.collection("user").doc((await this.afAuth.currentUser).uid).get().subscribe(user=>{
               this.user = new User(user.data());
-            });
-          }
-          if(!isNullOrUndefined(this.user)){
-            this.storage.set("user", this.user).then(()=>{
+            }); */
+            if((await this.afAuth.currentUser).emailVerified){
               const navigationExtras: NavigationExtras = {
                 state: {
                   order: this.data
@@ -63,15 +60,14 @@ export class LoginPage implements OnInit {
               control.dismiss();
               if(!isNullOrUndefined(this.data)){
                 this.router.navigate(['/place-order'], navigationExtras);
-              }else{ this.router.navigate(['/home']);
+              }else{ 
+                this.router.navigate(['/home']);
             }
-            });
-          }else{
-            control.dismiss();
-            this.afAuth.signOut();
+            
           }
           
           }).catch(rejection=>{control.dismiss(rejection, "alert");});
+      
          control.onWillDismiss().then(async (load)=>{
           if(load.role =="alert"){
             const alert = await this.alertcontroller.create({

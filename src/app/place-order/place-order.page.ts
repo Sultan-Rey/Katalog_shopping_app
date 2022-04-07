@@ -6,17 +6,13 @@ import { Product } from 'src/models/product';
 import { Order, Shipment } from 'src/models/order';
 import { Address } from 'src/models/addresses';
 import { Storage} from '@ionic/storage';
-import { FormGroup } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
-import { PaymentCredential, Paymethod } from 'src/models/paymethod';
 import { isNullOrUndefined } from 'util';
 import { isUndefined } from 'typescript-collections/dist/lib/util';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { OrderPage } from '../order/order.page';
 import { User } from 'src/models/user';
-import { async } from '@angular/core/testing';
-import { PaymentService } from '../payment.service';
+import { CartItem } from 'src/models/cartItem';
 
 
 
@@ -29,9 +25,10 @@ export class PlaceOrderPage implements OnInit {
 
     cost:string= btoa("600");
    id: string=btoa("12345");
-  
+   collapse: boolean;
+   paymentRequest!: google.payments.api.PaymentDataRequest;
   data: Order;
-  products: Product[];
+  products: CartItem[];
   addresses: Address[];
   shippingAddress: string='';
   defaultaddress: Address;
@@ -51,33 +48,88 @@ export class PlaceOrderPage implements OnInit {
   constructor(private http: HttpClient, private pickerCtrl: PickerController, private route: ActivatedRoute,
      private loadingcontroller: LoadingController,private storage: Storage, private alertcontroller: AlertController,
       private router: Router, private afirestore: AngularFirestore, private fireAuth: AngularFireAuth,
-      private payservice: PaymentService) {
+      ) {
     this.products=[];
     this.defaultaddress = {} as Address;
     this.getAdresses();
-    this.getMethod();
        }
 
   ngOnInit() {
+    this.collapse = true;
     this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.data = this.router.getCurrentNavigation().extras.state.order;
       }
     });
     
-      this.products = this.data.product;
+    if(!isNullOrUndefined(this.data)){
+      this.products = this.data.items;
       this.productqty = this.data.order_qty;
       this.amountOrder=this.data.amount; 
-     this.data.product.map(product=>{this.shippingfee=product.shippingFee;});
-     this.data.product.map(product=>{this.deliveryfee=product.deliveryFee;});
-     this.data.product.map(product=>{this.taxfee=product.taxFee;});
-      this.totalfee = this.amountOrder+this.shippingfee+this.deliveryfee+this.taxfee;
+     this.data.items.map(product=>{this.shippingfee+=product.shippingFee;});
+     this.data.items.map(product=>{this.deliveryfee+=product.deliveryFee;});
+     this.data.items.map(product=>{this.taxfee+=product.taxFee;});
+     this.data.items.map(product=>{this.deliverydate=this.calculateDeliveryDate(product.deliveryDate);})
+      }
+      
    
+
+      this.paymentRequest = {
+        apiVersion: 2,
+        apiVersionMinor: 0,
+        allowedPaymentMethods: [
+          {
+            type: 'CARD',
+            parameters: {
+              allowedCardNetworks:[ "MASTERCARD", "VISA"],
+              allowedAuthMethods: ['PAN_ONLY','CRYPTOGRAM_3DS']
+            },
+            tokenizationSpecification:{
+              type:'PAYMENT_GATEWAY',
+              parameters:{
+                gateway: 'example',
+                gatewayMerchantId: 'exampleGatewayMerchantId'
+              }
+            },
+          }
+          
+        ],
+        merchantInfo:{
+          merchantId: '12345678901234567890',
+          merchantName: 'Example Merchant'
+        },
+        transactionInfo:{
+          countryCode: 'US',
+          currencyCode: 'USD',
+          totalPriceLabel: 'TOTAL ALL TAXES INCLUDES',
+          totalPriceStatus: 'FINAL',
+      // set to cart total
+          totalPrice: this.totalfee.toFixed(2)
+        },
+        shippingAddressRequired: true,
+        shippingAddressParameters:{
+          allowedCountryCodes: ["US","CA","HT"],
+          phoneNumberRequired: true,
+        },
+        
+      };
+
     }
  
+
+    async onLoadPaymentData(event: Event){
+      const paymentData = (event as CustomEvent<google.payments.api.PaymentData>).detail;
+      console.log(paymentData);
+    }
+
+    calculCost(shippingfee: number,taxfee:number,deliveryfee:number,promotion:number, amount:number){
+      return this.totalfee = amount+shippingfee+deliveryfee+taxfee-promotion;
+    }
+
   shipaddressChange(){
-    this.shippingAddress = this.selectAddress;
+    this.collapse = !this.collapse;
   }
+
   getAdresses(){
     
     this.storage.get("address").then((data:Address[])=>{
@@ -100,48 +152,62 @@ export class PlaceOrderPage implements OnInit {
    
   }
 
-  getMethod(){
-    this.storage.get("paymethod").then((data:Paymethod[])=>{
-        for(let method of data){
-          if(method.default){
-            this.method = method.method;
-          }
-        }
-    }).catch(err=>{
-      console.log("addresses not found or empty");
+  async setAsDefault(addressid: string){
+    let setagreed: boolean = false;
+    const alert = await this.alertcontroller.create({
+      cssClass: 'my-custom-class',
+      header: 'Alert',
+      subHeader: 'Shipping address change',
+      message: 'Set address as default.',
+      buttons: [
+        {text:'OK',cssClass: '',handler:(ok)=>{ this.setDefault(addressid)}},
+        {text:'Cancel', cssClass:'my-custom-class'}
+      ]
     });
+    await alert.present();
    
   }
 
-  async showMethod() {
-    const opts: PickerOptions = {
-      buttons: [
-        {
-          text: 'Done',
-          role: 'Done'
-        }
-      ],
-      columns: [
-        {
-          name: 'method',
-          options: [
-            { text: 'MonCash$', value: 'moncash' },
-            { text: 'Star Card Balance', value: 'sc' },
-            { text: 'PayPal', value: 'pp' },
-            { text: 'Cashapp', value: 'cashapp' }
-          ]
+  setDefault(address: string){
+    let set:boolean=false;
+   this.storage.get("address").then((data: Address[]) => {
+    
+   for (let item of data) {
+         if (item.id === address) {
+             item.default = true;
+             set=true;
+         }
+     }
 
-        }
-      ]
-    };
-    const picker = await this.pickerCtrl.create(opts);
-    picker.present();
-    picker.onDidDismiss().then(async data => {
-      const col = await picker.getColumn('method');
-      this.method = col.options[col.selectedIndex].text;
-    });
-    return this.method;
+     if(set){ 
+       for (let item of data) {
+         if (item.id !== address) {
+             item.default = false;
+         }
+     }
+     this.setLoading(data); 
+     }
+     
+   }).catch(err=>{alert(err)});
   }
+
+  async setLoading(newaddress: Address[]){
+    const loading = await this.loadingcontroller.create({
+     cssClass: 'my-custom-class',
+     message: 'Please wait...',
+     duration: 2000
+    }).then((control)=>{
+      control.present();
+      control.onWillDismiss().then((load)=>{
+        this.addresses= newaddress;
+        this.storage.set("address",newaddress).then(()=>{
+          this.getAdresses();
+        });
+        
+       });
+    })
+  }
+
   
   
   onSubmit(postData:any){
@@ -158,16 +224,10 @@ export class PlaceOrderPage implements OnInit {
   }
 
    place_order(items_cost: number){
-    let order: Order[]=[];
-    let items_ordered: Order;
-    items_ordered.shipment = {} as Shipment;
-    items_ordered.payment = {} as Paymethod;
-    items_ordered.payment.credential = {} as PaymentCredential;
+    let items_ordered: Order={} as Order;
+    this.data.shipment.shipping_destination = this.shippingAddress;
     items_ordered = this.data;
-    items_ordered.shipment.shipping_destination = this.shippingAddress;
-    items_ordered.shipment.status="Not shipped yet";
-    items_ordered.amount = items_cost;
-    items_ordered.payment.method = this.method;
+    items_ordered.amount =  items_cost;
     
     this.storage.get('user').then(async (userLogged:User)=>{
       if(!isNullOrUndefined(userLogged)){
@@ -176,13 +236,11 @@ export class PlaceOrderPage implements OnInit {
 
         }else{
 
-          if(items_ordered.payment.method == 'PayPal'){
-              this.payservice.payWithPaypal(items_ordered.amount.toLocaleString(),"Item order: "+items_ordered.orderId)
-          }
 
           await this.loadingcontroller.create({
             cssClass: 'my-custom-class',
-            message: 'processing your order...'
+            message: 'processing your order...',
+            duration: 2000
           }).then(async (loaded)=>{
             loaded.present();
             this.afirestore.collection("orders").doc((await this.fireAuth.currentUser).uid)
@@ -217,7 +275,15 @@ export class PlaceOrderPage implements OnInit {
     });
     await alert.present();
   }
-   
+  
+  calculateDeliveryDate(date: any){
+    let deadline = new Date(Date.now());
+    if(new Date(date.seconds*1000 + date.nanoseconds)>= deadline){
+      deadline = date;
+    }
+    return deadline;
+  }
+
   sendToConfirm(orderToconfirm: Order){
     const navigationExtras: NavigationExtras = {
       state: {

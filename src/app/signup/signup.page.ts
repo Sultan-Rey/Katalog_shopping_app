@@ -1,12 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/firestore';
 import { LoadingController, PickerController, AlertController, ModalController } from '@ionic/angular';
 import {ActivatedRoute, Router, NavigationExtras} from '@angular/router';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { PickerOptions } from '@ionic/core';
-import { Observable} from 'rxjs';
-import { DepositModalComponent } from '../deposit-modal/deposit-modal.component';
-import { mainModule } from 'process';
+import { FormBuilder, Validators } from '@angular/forms';
 import { Product } from 'src/models/product';
 import { Storage} from '@ionic/storage';
 import { Address } from 'src/models/addresses';
@@ -183,7 +178,7 @@ getAgree(){
 
 
 
-  async showMethod() {
+ /*  async showMethod() {
     const opts: PickerOptions = {
       buttons: [
         {
@@ -216,7 +211,7 @@ getAgree(){
         this.openModal(this.method);
       }
     });
-  }
+  } */
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -225,20 +220,7 @@ getAgree(){
         }
     });
   }
-  async openModal(payment){
-    const modal = await this.modalcontroller.create({
-      component: DepositModalComponent,
-      componentProps: {method: payment}
-    });
-    modal.present();
-
-    const {data: moncash, role} = await modal.onWillDismiss();
-    if (role !== 'cancelled'){
-      this.addInfo(moncash);
-    }else{
-      this.method = null;
-    }
-  }
+ 
 
   addInfo(value: any){
     this.storage.set('moncashId', value);
@@ -247,6 +229,7 @@ getAgree(){
     persistenceLogin(register: any){
 
         this.user.type = "USER"
+        this.user.name = register.identification.name
         this.user.email = register.security.mail;
         this.user.password = register.security.password;
         this.user.address.address1 = register.location.address1;

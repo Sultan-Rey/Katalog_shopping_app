@@ -5,6 +5,8 @@ import * as firebase from 'firebase';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { LoadingController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
+import { User } from 'src/models/user';
+import { isNullOrUndefined } from 'util';
 
 @Component({
   selector: 'app-account',
@@ -14,7 +16,8 @@ import { Storage } from '@ionic/storage';
 export class AccountPage implements OnInit {
 
   connected: boolean=false;
-
+  welcomeWord: string ='';
+  user: User; 
   passwordForm = this.formBuilder.group({
     old: ['', [Validators.required, Validators.minLength(8), Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$')]],
     new: ['', [Validators.required, Validators.minLength(8), Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$')]]
@@ -32,10 +35,15 @@ export class AccountPage implements OnInit {
   {  this.fireauth.authState.subscribe(auth => {
     if (!auth){
       this.connected = false;
+      this.welcomeWord = 'Manage your account';
     }else {
       this.connected = true;
+      this.getUser(auth.uid);
     }
-  }); }
+  }); 
+
+ 
+}
   ngOnInit() {
     
   }
@@ -64,11 +72,14 @@ export class AccountPage implements OnInit {
               });
           });
         });
+    }else{
+      this.passwordForm.value.new=null;
+              this.passwordForm.value.old=null;
     }
     }
    
   signout(){
-    this.fireauth.signOut().then(()=>{this.storage.set("userIsLogged", false);});
+    this.fireauth.signOut().then(()=>{this.storage.remove("user");});
   }
  
   getOldPassword() {
@@ -78,6 +89,12 @@ export class AccountPage implements OnInit {
     return this.passwordForm.get('new');
   }
 
-
+  getUser(userUID: any){
+    
+    this.afstore.collection("user").doc(userUID).get().subscribe(user=>{
+              this.user = new User(user.data());
+            });
+          this.welcomeWord = 'Welcome '+this.user.name;
+  }
 
 }

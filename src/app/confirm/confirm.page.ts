@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CartItem } from 'src/models/cartItem';
 import { Order } from 'src/models/order';
 import { Product } from 'src/models/product';
 
@@ -11,7 +12,7 @@ import { Product } from 'src/models/product';
 export class ConfirmPage implements OnInit {
 
   data: Order;
-  product: Product[];
+  product: CartItem[];
   qty: number;
   orderId: string='';
   constructor(private route: ActivatedRoute, private router: Router) { }
@@ -22,7 +23,7 @@ export class ConfirmPage implements OnInit {
         this.data = this.router.getCurrentNavigation().extras.state.order;
       }
     });
-    this.product = this.data.product;
+    this.product = this.data.items;
     this.qty=this.data.order_qty;
     this.orderId=this.data.orderId;
   }

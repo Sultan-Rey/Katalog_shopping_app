@@ -1,13 +1,12 @@
-import { Paymethod } from "./paymethod";
-import { Features, Product } from "./product";
+
+import { CartItem } from "./cartItem";
 
 export interface Order{
     orderId : string;
-    product: Product[];
+    items: CartItem[];
     date_order : Date;
     order_qty: number;
     amount: number;
-    payment ?: Paymethod
     shipment ?: Shipment;
 }
 

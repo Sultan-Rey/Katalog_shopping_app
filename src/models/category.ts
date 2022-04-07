@@ -1,5 +1,5 @@
 export interface Categories{
-    name: string;
-    type: string;
-    banner: string;
+    category: string;
+    image: string;
+    subcategories: string[];
 }

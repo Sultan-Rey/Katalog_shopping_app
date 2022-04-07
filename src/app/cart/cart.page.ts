@@ -2,9 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { Product } from 'src/models/product';
 import { Storage} from '@ionic/storage';
-import { Order } from 'src/models/order';
+import { Order, Shipment } from 'src/models/order';
 import { isNullOrUndefined } from 'util';
 import { CartItem } from 'src/models/cartItem';
+import { FirestoreDataService } from '../firestore-data.service';
+import { ToastController } from '@ionic/angular';
+import { LocalStorageService } from '../local-storage.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -13,54 +17,38 @@ import { CartItem } from 'src/models/cartItem';
 })
 export class CartPage implements OnInit {
 
+  element='';
+  itemFromDB: Observable<Product[]>;
+  item: Product;
   cart: CartItem[] = [];
   saved: CartItem[]=[];
-  noItem: boolean;
-  nosaved: boolean;
+  
   orderQty:number = 0;
   totalcost:number = 0.00;
-  constructor(private router: Router, private route: ActivatedRoute, private storage: Storage) {
-    this.getsavedforlater();this.getCartItems();}
+  
+  constructor(private toastconroller: ToastController,private router: Router, private fstoreService: 
+    FirestoreDataService, private lstorage: LocalStorageService, private storage: Storage) {
+   this.cart = this.lstorage.getCartItems();
+   this.saved = this.lstorage.getsavedforlater();
+   this.itemFromDB = this.fstoreService.getProducts();
+  }
 
   ngOnInit() {
-   this.noItem = false;
-   this.nosaved = false;
-  }
- 
-  getCartItems(){
-    this.totalcost = 0.00;
-    this.storage.get("cart").then((data:CartItem[])=>{
-      this.cart= data;
-       
-    }).catch(err=>{
-      console.log("cart not found or empty");
-      
-    });
    
   }
-  getsavedforlater(){
-    this.storage.get("savedforlater").then((data:CartItem[])=>{
-        this.saved=data;
-        this.nosaved = false;
-    }).catch(err=>{
-      console.log("saved not found or empty");
-      this.nosaved = true;
-    });
    
-  }
-
 
   adjustqty(pressed: string, item: CartItem)
   {
     if(pressed === 'minus'){
-      if(item.item_qty !== 1){
-       item.item_qty--;
+      if(item.qty !== 1){
+       item.qty--;
       }else{
 
       } 
     }
     if(pressed === 'plus'){
-      item.item_qty++;
+      item.qty++;
     }
   }
 
@@ -69,28 +57,48 @@ export class CartPage implements OnInit {
     let totalamount: number=0;
     this.totalcost = 0.00;
     this.cart.forEach(element=>{
-          totalamount += element.product.features[0].price * element.item_qty;
+          totalamount += element.price * element.qty;
         });
         this.cart.forEach(element=>{
-            this.orderQty+= element.item_qty;
+            this.orderQty+= element.qty;
         });
      return this.totalcost = totalamount;   
   }
 
   savedForLater(item: CartItem){
     let deleted: boolean = false;
+    let tosaved: CartItem;
    for(let cartItem of this.cart){
      if(cartItem === item){
        this.cart.splice(this.cart.indexOf(item),1);
-       this.saved.push(cartItem);
+        tosaved = cartItem;
        deleted = true
            }
    }
    if(deleted){
+     let alreadySaved = false;
     this.storage.set("cart",this.cart);
-     this.storage.set("savedforlater",this.saved);
-     //this.getsavedforlater()
+    this.storage.get('savedforlater').then((saved: CartItem[])=>{
+      if(saved == null || saved.length==0){
+        saved = [];
+        saved.push(tosaved);
+      }else 
+        {
+          for(let saveItem of saved){
+            if(saveItem == tosaved){
+              saveItem.qty = tosaved.qty
+              alreadySaved = true;
+
+            }
+          }
+          if(!alreadySaved){
+            saved.push(tosaved);
+          }
+        }
+        this.storage.set("savedforlater",saved);
+    })
    }
+   this.saved = this.lstorage.getsavedforlater();
   }
 
   remove(item:CartItem){
@@ -128,20 +136,23 @@ export class CartPage implements OnInit {
     let id: string = "CA"+Math.floor(Math.random()*1000)+"-"+date;
     return id;
   }
-  checkout(){
+
+  checkout(cartItems: any){
+    let shipment = {} as Shipment;
     if(this.totalcost>0.00){
-      let cartProducts: Product[]=[];
-      this.cart.forEach(item=>{
-        item.product.qty = item.item_qty;
-        cartProducts.push(item.product);
-      });
-      let prepareOrder: Order = {
-        orderId: this.crypto(),
-        product:cartProducts,
-        date_order: new Date(Date.now()),
-        order_qty: this.orderQty,
-        amount: this.totalcost
-      }
+    shipment.goods_departure = 'Packaging with KATALOG team service';
+    shipment.shipping_destination = '';
+    shipment.status = 'Not shipped yet';
+    shipment.carrier = '';
+    shipment.trackingnumber = '';
+    let prepareOrder: Order = {
+      orderId: this.crypto(),
+      items: cartItems,
+      date_order: new Date(Date.now()),
+      order_qty: this.orderQty,
+      amount: this.totalcost,
+      shipment: shipment,
+    }
       const navigationExtras: NavigationExtras = {
         state: {
           order: prepareOrder
@@ -154,19 +165,51 @@ export class CartPage implements OnInit {
   }
 
   goTo(item: any): void {
-    const navigationExtras: NavigationExtras = {
-      state: {
-        product: item
+    this.item = {} as Product;
+    let isfound = false;
+    for(let product of this.fstoreService.getFirestoreData()){
+      if(product.name==item.name && product.description==item.description){
+        this.item = product;
+        isfound = true;
       }
-    };
-    this.router.navigate(['/product'], navigationExtras);
+    }
+  
+    if(isfound){
+      const navigationExtras: NavigationExtras = {
+        state: {
+          product: item
+        }
+      };
+      this.router.navigate(['/product'], navigationExtras);
+    }else{
+      this.rejection()
+    }
+    
   }
 
-  // crypto(){
-  //   let date =  Date.now();
-  //   let productname = this..name.substring(0,2).toUpperCase();
-  //   let id: string = productname+Math.random() +date;
-  //   return id;
-  // }
+  checkQty(item: any){
+    let stockQty = 10;
+    for(let product of this.fstoreService.getFirestoreData()){
+      if(product.name==item.name && product.description==item.description){
+        stockQty = product.qty;
+      }
+    }
+    return stockQty;
+  }
+
+  async rejection(){
+    let toast = await this.toastconroller.create({
+      message: 'Sorry! product is no longer available',
+      duration: 3000
+    });
+   await  toast.present();
+  }
+
+  filter(){
+    if(this.element!==''){
+      this.cart.filter((item)=>item.name.includes(this.element));
+    }
+    
+  }
 
 }

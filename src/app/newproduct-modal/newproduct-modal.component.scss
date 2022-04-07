@@ -28,10 +28,10 @@ div {
   width: 100%;
 }
 .dot{
-    height: 30px;
-    width: 30px;
+    height: 20px;
+    width: 20px;
     border-radius: 50%;
-    display: inline-block;
+    position: absolute;
     border: 1px solid rgb(40, 29, 53);
   }
   .circle{
@@ -47,4 +47,8 @@ div {
     text-indent: 0px;
     padding: 0;
     margin:0;
+  }
+
+  .creating_container{
+    display: none;
   }

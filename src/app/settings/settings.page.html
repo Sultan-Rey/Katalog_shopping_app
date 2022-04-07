@@ -36,14 +36,13 @@
     <ion-item *ngIf="isSelected=='product'">
       <ion-label>Filter By :</ion-label>
       <ion-chip>Category <ion-icon name="chevron-down"></ion-icon></ion-chip>
-      <ion-chip >Price <ion-icon name="chevron-down"></ion-icon></ion-chip>
+      <ion-chip>Price <ion-icon name="chevron-down"></ion-icon></ion-chip>
     </ion-item>
     <ion-item  *ngIf="isSelected=='customers'">
       <ion-label>Filter By :</ion-label>
       <ion-chip>Boughts <ion-icon name="chevron-down"></ion-icon></ion-chip>
       <ion-chip >Likes<ion-icon name="chevron-down"></ion-icon></ion-chip>
     </ion-item>
-    
   </div>
 
   <div class="variation-selector">
@@ -54,32 +53,27 @@
       </div>
       
       <ion-list>
-        <ion-item-sliding style="display: block;" *ngFor="let item of items">
+        <ion-item-sliding style="display: block;" *ngFor="let item of product | async ">
           <ion-item>
             <ion-thumbnail slot="start">
-              <ion-img src="assets/images/balmain.jpg" alt="product image"></ion-img>
+              <ion-img [src]="item.models[0].pictures[0]" alt="product image"></ion-img>
             </ion-thumbnail>
             <ion-label>
               <h6>{{item.name}}</h6>
               <p>{{item.description}}</p>
               <ion-buttons>
-                <p>{{item.price}}<ion-icon name="pricetag"></ion-icon></p>
-                <ion-button>Qty vendus</ion-button>
+                <p>{{item.caracteristic[0].price}}<ion-icon name="pricetag"></ion-icon></p>
+                <ion-button>{{item.caracteristic[0].qty}}</ion-button>
               </ion-buttons>
-             
             </ion-label>
             
           </ion-item>
           <ion-item-options>
-            <ion-item-option>
-              <ion-icon slot="top" name="cart" ></ion-icon>
+            <ion-item-option (click)="edit(item)">
+              <ion-icon name="create-outline"></ion-icon>
               Edit
             </ion-item-option>
-            <ion-item-option color="warning">
-              <ion-icon slot="top" name="eye"></ion-icon>
-              Hide
-            </ion-item-option>
-            <ion-item-option color="danger">
+            <ion-item-option (click)="remove(item)" color="danger">
               <ion-icon slot="top" name="trash"></ion-icon>
               Delete
             </ion-item-option>
@@ -92,20 +86,20 @@
 
     <div class="colors" [class.active-variation]="activeVariation == 'color'">
      <ion-list>
-      <ion-item-sliding style="display: block;">
+      <ion-item-sliding style="display: block;" *ngFor="let user of users | async ">
         <ion-item>
           <ion-avatar slot="start">
             <ion-icon name="person-outline"></ion-icon>
           </ion-avatar>
           <ion-label>
-            <h6>Jhon Smith</h6>
+            <h6>{{user.name}}</h6>
             <p><ion-label>
               <ion-icon name="cellular"></ion-icon>
-              +1 567 789 78 67
+              {{user.phone}}
             </ion-label></p>
             <p><ion-label>
               <ion-icon name="mail"></ion-icon>
-              e-mail.customer@katalog.com
+              {{user.email}}
             </ion-label></p>
             <ion-buttons>
               <ion-chip color="success">370<ion-icon  name="pricetag"></ion-icon></ion-chip>
@@ -139,40 +133,29 @@
      </div>
 
      <ion-item-divider>Home Page</ion-item-divider>
-     
+     <ion-item>
+       <ion-label>Slide Image</ion-label>
+         <ion-button slot="end">
+           <ion-icon name="add"></ion-icon>
+            ADD
+          </ion-button>
+     </ion-item>
+     <ion-slides *ngIf="slides$ | async as slide" >
+       <ion-slide *ngFor="let s of slide.slides">
+         <ion-item-group>
+            <ion-img  [src]="slide.url"></ion-img>
+            <ion-button (click)="deleteSlide(slide)">
+              <ion-icon name="trash"></ion-icon>
+              Delete
+            </ion-button>
+         </ion-item-group>
+         
+       </ion-slide>
+     </ion-slides>
       
     </div>
   </div>
 </ion-content>
 
 
-<ion-footer>
-  <ion-toolbar class="footer">
-    <ion-row round>
-      <ion-col offset-1 col-10 routerLink="/home" routeDirection="forward">
-        <ion-icon class="footerIcon" name="home-outline"></ion-icon>
-        <div id="touch">
-        <h4>Home</h4>
-       </div>  
-    </ion-col>
-      <ion-col offset-1 col-10 routerLink="/cart" routeDirection="forward">
-        <ion-icon class="footerIcon" name="cart-outline"></ion-icon>
-        <div id="touch">
-          <h4>Cart</h4>
-         </div> 
-      </ion-col>
-      <ion-col offset-1 col-10 routerLink="/profil" routeDirection="forward">
-        <ion-icon class="footerIcon" name="person-outline"></ion-icon>
-        <div id="touch">
-          <h4>Profil</h4>
-         </div> 
-      </ion-col>
-      <ion-col offset-1 col-10 routerLink="/order" routeDirection="forward">
-        <ion-icon class="footerIcon" name="cube-outline"></ion-icon>
-        <div id="touch">
-          <h4>Order...</h4>
-         </div> 
-      </ion-col>
-    </ion-row>
-  </ion-toolbar>
-</ion-footer>
+<app-page-footer></app-page-footer>

@@ -5,6 +5,7 @@ import { CartItem } from 'src/models/cartItem';
 import { Product } from 'src/models/product';
 import { FirestoreDataService } from '../firestore-data.service';
 import{Storage} from '@ionic/storage';
+import { LocalStorageService } from '../local-storage.service';
 
 @Component({
   selector: 'app-searchquery',
@@ -14,8 +15,9 @@ import{Storage} from '@ionic/storage';
 export class SearchqueryPage implements OnInit {
   query:string = '';
   items:Product[]=[];
+  details: CartItem;
   constructor(private route: ActivatedRoute, private router: Router, private firestoreData: FirestoreDataService,
-              private storage: Storage, private toastcontroller: ToastController) {
+              private lstorage: LocalStorageService, private toastcontroller: ToastController) {
     
    }
 
@@ -23,15 +25,19 @@ export class SearchqueryPage implements OnInit {
     this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.query = this.router.getCurrentNavigation().extras.state.query;
+        if(this.query!==''&& this.query!==null){
+          
+        }
       }
     });
-    this.search();
+    
   }
 
   search(){
     if(this.query!==''){
-      this.items = this.firestoreData.fireStoreSimulation().filter((product)=>product.name.toUpperCase().includes(this.query.toUpperCase()) || product.description.toUpperCase().includes(this.query.toUpperCase()));
-    }else{
+      this.items = this.firestoreData.getFirestoreData().filter((product)=>product.name.toUpperCase().includes(this.query.toUpperCase()) || product.description.toUpperCase().includes(this.query.toUpperCase())); 
+    }
+    else{
       
     }
   }
@@ -45,61 +51,37 @@ export class SearchqueryPage implements OnInit {
     this.router.navigate(['/product'], navigationExtras);
   }
 
-  addToCart(item_details: Product) {
-    let isAdded: boolean = false;
-    
-    
-    this.storage.get("cart").then((data: CartItem[]) => {
-      if (data === null || data.length === 0) {
-        data = [];
-        data.push({
-          product: item_details,
-          item_qty: 1
-        });
-        this.presentToast(1);
-      } else {
-        for (let item of data) {
-          if (item.product.ref === item_details.ref) {
-            item.item_qty+=1;
-            isAdded = true;
-            this.presentToast(2);
-          }
-        }
-        if (!isAdded) {
-          data.push({
-            product: item_details,
-            item_qty: 1,
-           
-          });
-          this.presentToast(1);
-        }
-      }
-      this.storage.set("cart", data);
-      
-    }); 
-   
-
+  setItem(item_details: Product){
+    this.details = {} as CartItem;
+    this.details.name = item_details.name;
+    this.details.brand =  item_details.brand;
+    this.details.description = item_details.description;
+    this.details.category =  item_details.category;
+    this.details.qty =  1;
+    this.details.size =  item_details.size[0];
+    this.details.color =  item_details.models[0].id;
+    this.details.shippingFee =  item_details.shippingFee;
+    this.details.deliveryFee =  item_details.deliveryFee;
+    this.details.taxFee =  item_details.taxFee;
+    this.details.deliveryDate =  item_details.deliveryDate;
+    this.details.picture = item_details.models[0].pictures[0];
+    this.details.price = item_details.caracteristic[0].price;
+    return this.details;
   }
 
-  async presentToast(control: number){
-    if(control==1){
+   addToCart(item_details: Product) {
+    this.lstorage.addTocart(this.setItem(item_details)).then(async ()=>{
       const toast = await this.toastcontroller.create({
         header : "Add To Cart",
         message: "Item added to your cart",
         duration: 2000
       });
       await toast.present();
-    }
-    if(control ==2){
-      const toast = await this.toastcontroller.create({
-        header : "Add To Cart",
-        cssClass: "my-custom-class",
-        message: "Item already in the cart or not saved",
-        duration: 2000
-      });
-      await toast.present();
-    }
+    });
+    
   }
+
+ 
 
 
 

@@ -1,20 +1,33 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons>
-      <ion-back-button></ion-back-button>
+<ion-header  mode=ios>
+  <ion-toolbar  color="dark">
+    <ion-buttons slot="start">
+   <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title><ion-icon size="large" name="star"></ion-icon>STAR CARD</ion-title>
+    <ion-buttons>
+      <ion-title  class="width" mode=ios >
+        <ion-text size="LARGE" color="warning">
+          K</ion-text>
+          <ion-text color="danger"><ion-icon size="LARGE" name=cart></ion-icon></ion-text>
+          <ion-text >ta</ion-text><img title="app header" alt="image icon" class="icon" src="assets/icon/lipstick.png"/><ion-text>og</ion-text>
+        </ion-title>
+    </ion-buttons>
+
   </ion-toolbar>
-</ion-header>
+  <ion-buttons>
+    <ion-item-divider>
+      <ion-label>Pay faster with your starcard</ion-label>
+    </ion-item-divider>
+  </ion-buttons>
+ </ion-header>
 
 <ion-content>
 
-  <div *ngIf="connected==false" name="authentification">
+  <div *ngIf="connected==false" name="authentification" class="ion-padding">
     <ion-buttons>
       <ion-button routerLink="/login" routerDirection="forward" expand="block">SIGN IN BEFORE USE STARCARD</ion-button>
     </ion-buttons>
   </div>
-  <div *ngIf="connected==true" name="starcard">
+  <div *ngIf="connected==true" name="starcard" class="ion-padding">
 
     <div *ngIf="!starcard.activation" name="starcard_activation">
       <ion-card>
@@ -36,7 +49,7 @@
         </ion-card>
        
     </div>
-    <div *ngIf="starcard.activation" name="starcard_content">
+    <div *ngIf="starcard.activation && isRegistred==true" name="starcard_content">
 
       <div class="container">
         <ion-item>

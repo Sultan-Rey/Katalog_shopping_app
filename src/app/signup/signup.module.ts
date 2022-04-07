@@ -8,7 +8,7 @@ import { IonicModule } from '@ionic/angular';
 import { SignupPageRoutingModule } from './signup-routing.module';
 
 import { SignupPage } from './signup.page';
-import { DepositModalComponent } from '../deposit-modal/deposit-modal.component';
+
 
 @NgModule({
   imports: [
@@ -18,7 +18,7 @@ import { DepositModalComponent } from '../deposit-modal/deposit-modal.component'
     SignupPageRoutingModule,
     ReactiveFormsModule
   ],
-  declarations: [SignupPage, DepositModalComponent],
-  entryComponents: [DepositModalComponent]
+  declarations: [SignupPage],
+  entryComponents: []
 })
 export class SignupPageModule {}

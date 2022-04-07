@@ -15,7 +15,7 @@
 <ion-content>
  
   <div class="container">
-    <ion-img id="img" src="assets/images/oldlock.jpg"></ion-img>
+   
     <ion-item>
       <ion-icon slot="start" name="person"></ion-icon>
       <ion-label position="floating">Email or number phone</ion-label>
@@ -48,32 +48,31 @@
 
 </ion-content>
 <ion-footer>
-  <ion-toolbar class="footer">
-    <ion-row round>
-      <ion-col offset-1 col-10 routerLink="/home"  routerDirection="forward">
-        <ion-icon class="footerIcon" name="home-outline"></ion-icon>
-        <div class="touch">
-        <h4>Home</h4>
-       </div>  
-    </ion-col>
-      <ion-col offset-1 col-10 routerLink="/cart"  routerDirection="forward">
-        <ion-icon class="footerIcon" name="cart-outline"></ion-icon>
-        <div class="touch">
-          <h4>Cart</h4>
-         </div> 
-      </ion-col>
-      <ion-col offset-1 col-10 routerLink="/profil"  routerDirection="forward">
-        <ion-icon class="footerIcon" name="person-outline"></ion-icon>
-        <div class="touch">
-          <h4>Profil</h4>
-         </div> 
-      </ion-col>
-      <ion-col offset-1 col-10 routerLink="/order"  routerDirection="forward">
-        <ion-icon class="footerIcon" name="cube-outline"></ion-icon>
-        <div class="touch">
-          <h4>Order...</h4>
-         </div> 
-      </ion-col>
-    </ion-row>
+  <ion-toolbar >
+    <ion-tabs>
+      <ion-tab-bar color="dark">
+        <ion-tab-button routerLink="/home"  routerDirection="forward">
+          <ion-icon name="home-outline"></ion-icon>
+          <ion-label>Home</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button routerLink="/cart"  routerDirection="forward">
+          <ion-icon name="cart-outline"></ion-icon>
+          <ion-label>Cart</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button routerLink="/account"  routerDirection="forward">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          <ion-label>Profil</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button routerLink="/order"  routerDirection="forward">
+          <ion-icon name="cube-outline"></ion-icon>
+          <ion-label>Order</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    
+    </ion-tabs>
   </ion-toolbar>
+  
 </ion-footer>

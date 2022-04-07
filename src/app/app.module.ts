@@ -6,7 +6,6 @@ import { IonicStorageModule } from '@ionic/storage';
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
-
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AngularFireModule } from '@angular/fire';
@@ -17,9 +16,13 @@ import { AngularFirestoreModule} from '@angular/fire/firestore';
 import { NewproductModalComponent } from './newproduct-modal/newproduct-modal.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ImagePicker } from '@ionic-native/image-picker/ngx';
-import { AddAddressModalComponent } from './add-address-modal/add-address-modal.component';
 import { HttpClientModule} from '@angular/common/http';
-import { PayPal} from '@ionic-native/paypal/ngx';
+import { Camera } from '@awesome-cordova-plugins/camera/ngx';
+import { NgxIonicImageViewerModule } from 'ngx-ionic-image-viewer';
+import { SharedviewsModule } from './sharedviews/sharedviews.module';
+import { PageHeaderComponent } from './page-header/page-header.component';
+
+
 
 export const firebaseConfig = {
   apiKey: 'AIzaSyBabPrVBAjGXeNQk0NlqTlpMFUcFgNuKiw',
@@ -32,24 +35,28 @@ export const firebaseConfig = {
 
 
 @NgModule({
-  declarations: [AppComponent, NewproductModalComponent, AddAddressModalComponent],
+  declarations: [AppComponent, NewproductModalComponent],
   entryComponents: [],
   imports: [BrowserModule,
     FormsModule,
+    NgxIonicImageViewerModule,
     HttpClientModule,
     ReactiveFormsModule,
-     IonicModule.forRoot(), AppRoutingModule,
+    SharedviewsModule,
+    IonicModule.forRoot(), 
+    AppRoutingModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFireDatabaseModule,
     AngularFireAuthModule,
     AngularFireStorageModule,
     AngularFirestoreModule,
-    IonicStorageModule.forRoot()
+    IonicStorageModule.forRoot(),
+   
   ],
   providers: [
     ImagePicker,
     StatusBar,
-    PayPal,
+    Camera,
     SplashScreen,
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy }
   ],

@@ -20,6 +20,9 @@
     "@angular/platform-browser": "~10.0.0",
     "@angular/platform-browser-dynamic": "~10.0.0",
     "@angular/router": "~10.0.0",
+    "@awesome-cordova-plugins/camera": "^5.37.3",
+    "@awesome-cordova-plugins/core": "^5.37.3",
+    "@google-pay/button-angular": "^3.0.0",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/image-picker": "^5.36.0",
     "@ionic-native/paypal": "^5.36.0",
@@ -27,13 +30,15 @@
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^5.0.0",
     "@ionic/storage": "^2.3.1",
-    "cordova-android": "9.1.0",
-    "cordova-browser": "^6.0.0",
-    "cordova-plugin-telerik-imagepicker": "^2.3.6",
+    "bootstrap": "^5.1.3",
+    "cordova-res": "^0.15.4",
     "firebase": "^7.24.0",
     "ionic3-star-rating": "^2.1.2",
     "ionic4-star-rating": "^1.1.1",
+    "jquery": "^3.6.0",
+    "ngx-ionic-image-viewer": "^0.7.5",
     "nodejs-moncash-sdk": "github:ecelestin/ecelestin-Moncash-sdk-nodejs",
+    "normalize-url": "^7.0.2",
     "rxjs": "~6.5.5",
     "tslib": "^2.0.0",
     "typescript-collections": "^1.3.3",
@@ -50,15 +55,17 @@
     "@types/jasmine": "~3.5.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
-    "card.io.cordova.mobilesdk": "^2.1.0",
     "codelyzer": "^6.0.0",
-    "com.paypal.cordova.mobilesdk": "^3.5.0",
+    "cordova-android": "^10.1.1",
+    "cordova-plugin-androidx": "^3.0.0",
+    "cordova-plugin-androidx-adapter": "^1.1.3",
+    "cordova-plugin-camera": "^6.0.0",
     "cordova-plugin-device": "^2.0.2",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
     "cordova-plugin-ionic-webview": "^4.2.1",
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-statusbar": "^2.4.2",
-    "cordova-plugin-whitelist": "^1.3.3",
+    "cordova-plugin-telerik-imagepicker": "^2.3.3",
     "jasmine-core": "~3.5.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~5.0.0",
@@ -74,16 +81,23 @@
   "description": "An Ionic project",
   "cordova": {
     "plugins": {
-      "cordova-plugin-whitelist": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device": {},
       "cordova-plugin-splashscreen": {},
-      "cordova-plugin-ionic-webview": {},
+      "cordova-plugin-ionic-webview": {
+        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
+      },
       "cordova-plugin-ionic-keyboard": {},
-      "com.paypal.cordova.mobilesdk": {}
+      "cordova-plugin-androidx": {},
+      "cordova-plugin-androidx-adapter": {},
+      "cordova-plugin-telerik-imagepicker": {
+        "PHOTO_LIBRARY_USAGE_DESCRIPTION": " "
+      },
+      "cordova-plugin-camera": {
+        "ANDROIDX_CORE_VERSION": "1.6.+"
+      }
     },
     "platforms": [
-      "browser",
       "android"
     ]
   }

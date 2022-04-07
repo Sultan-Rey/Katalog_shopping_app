@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
 import { NavigationExtras, Router } from '@angular/router';
 import { FormGroup, FormControl, Validators} from '@angular/forms';
-import { Platform } from '@ionic/angular';
+import { AlertController, Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+
 
 @Component({
   selector: 'app-root',
@@ -15,24 +16,28 @@ export class AppComponent {
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
-    private router: Router
+    private router: Router,
+    private alertCtrl: AlertController
   ) {
     this.initializeApp();
   }
 
   initializeApp() {
     this.platform.ready().then(() => {
-      this.statusBar.styleDefault();
+      this.statusBar.backgroundColorByHexString('#031432');
       this.splashScreen.hide();
+
     });
   }
+
+  
   navigateTo(category: string){
     const navigationExtras: NavigationExtras = {
       state: {
         product: category
       }
     };
-    this.router.navigate(['/categories'], navigationExtras);
+    this.router.navigate(['/historic'], navigationExtras);
   }
 
   

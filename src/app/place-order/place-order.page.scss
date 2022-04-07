@@ -45,31 +45,17 @@
     font-weight: bolder;
     font-size:22px;
   }
-  .touch h4{
-    display: block;
-    margin-left: 20px;
-    margin-right: auto;
-    align-items: center;
-    font-size: 14px;
-    margin-top:0;
-    margin-bottom:0;
+  .dot{
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid rgb(40, 29, 53);
+    padding-left: 6px;
+    padding-right: 6px;
   }
 
-  #pbIcon{
-    width: 100%;
-    display: inline;
-  }
-  #pbIcon span{
-    display: inline-block;
-    margin-left: 10%;
-    padding: auto;
-    margin-right: 0;
-  }
-  #pbIcon h6{
-    font-size: 12px;
-    margin:0;
-    padding: 0;
-  }
+
   #iDesc{
     padding-top: 20px;
     padding-right: 10px;

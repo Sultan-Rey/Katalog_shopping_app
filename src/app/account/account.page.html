@@ -1,74 +1,102 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-buttons style="margin-top:5%;" slot="start">
-      <ion-back-button></ion-back-button>
+<ion-header  mode=ios>
+  <ion-toolbar  style=" --background: #031432;">
+    <ion-buttons slot="start">
+   <ion-back-button></ion-back-button>
     </ion-buttons>
-    <ion-title>account</ion-title>
+    <ion-buttons>
+      <ion-title  class="width" mode=ios >
+        <ion-text size="LARGE" color="warning">
+          K</ion-text>
+          <ion-text color="danger"><ion-icon size="LARGE" name=cart></ion-icon></ion-text>
+          <ion-text >ta</ion-text><img title="app header" alt="image icon" class="icon" src="assets/icon/lipstick.png"/><ion-text>og</ion-text>
+        </ion-title>
+    </ion-buttons>
+
   </ion-toolbar>
-</ion-header>
+  <ion-buttons>
+    <ion-item-divider>
+      
+        <ion-icon name="settings"></ion-icon>
+      <ion-label>{{welcomeWord}}</ion-label>
+    </ion-item-divider>
+  </ion-buttons>
+ </ion-header>
 
 
 <ion-content>
   <div class="container">
-    <h4>Change Password</h4>
-    <ng-form [formGroup]="passwordForm" (ngSubmit)="submit()">
-      <ion-item>
-        <ion-chip>
-          <ion-input type="password" class="field" formControlName="old" placeholder="Old Password"></ion-input>
-                 </ion-chip>
-      </ion-item>
-        <div *ngFor="let error of errorMessages.password" class="padding-left">
-        <ng-container *ngIf="getOldPassword().hasError(error.type) && (getOldPassword().dirty || getOldPassword().touched)">
-          <small class="error-message">{{error.message}}</small>
-        </ng-container>
-      </div>
-      <ion-item>
-        <ion-chip>
-          <ion-input type="password" class="field" formControlName="new" placeholder="New Password"></ion-input>
-           </ion-chip>
-      </ion-item>
-       <div *ngFor="let error of errorMessages.password" class="padding-left">
-        <ng-container *ngIf="getNewPassword().hasError(error.type) && (getNewPassword().dirty || getNewPassword().touched)">
-          <small class="error-message">{{error.message}}</small>
-        </ng-container>
-      </div>
-      <ion-button expand="block" type="submit">Change password</ion-button>
-    </ng-form>
+    <ion-card>
+      <ion-card-title> <h4>Change Password</h4></ion-card-title>
+      <ion-card-content>
+        <ng-form [formGroup]="passwordForm" (ngSubmit)="submit()">
+          <ion-item>
+            <ion-chip>
+              <ion-input type="password" class="field" formControlName="old" placeholder="Old Password"></ion-input>
+                     </ion-chip>
+          </ion-item>
+            <div *ngFor="let error of errorMessages.password" class="padding-left">
+            <ng-container *ngIf="getOldPassword().hasError(error.type) && (getOldPassword().dirty || getOldPassword().touched)">
+              <small style="color: red;" class="error-message">{{error.message}}</small>
+            </ng-container>
+          </div>
+          <ion-item>
+            <ion-chip>
+              <ion-input type="password" class="field" formControlName="new" placeholder="New Password"></ion-input>
+               </ion-chip>
+          </ion-item>
+           <div *ngFor="let error of errorMessages.password" class="padding-left">
+            <ng-container *ngIf="getNewPassword().hasError(error.type) && (getNewPassword().dirty || getNewPassword().touched)">
+              <small style="color: red;"  class="error-message">{{error.message}}</small>
+            </ng-container>
+          </div>
+          <ion-item>
+            <ion-button expand="block" type="submit">Change password</ion-button>
+          </ion-item>
+          
+        </ng-form>
+      </ion-card-content>
+    </ion-card>
+   
+  
   </div>
 
   <div class="container">
-    <ion-button *ngIf="!connected" expand="block" color="secondary" routerLink="/login" routerDirection="forward">Sign In</ion-button>
-    <ion-button *ngIf="connected" expand="block" color="medium" (click)="signout()">Sign Out</ion-button>
-  </div>
+    <ion-card>
+      <ion-card-title>Connection</ion-card-title>
+      <ion-card-content>
+        <ion-button *ngIf="!connected" expand="block" color="secondary" routerLink="/login" routerDirection="forward">Sign In</ion-button>
+        <ion-button *ngIf="connected" expand="block" color="medium" (click)="signout()">Sign Out</ion-button>
+      </ion-card-content>
+    </ion-card>
+     </div>
 </ion-content>
 
 <ion-footer>
-  <ion-toolbar class="footer">
-    <ion-row round>
-      <ion-col offset-1 col-10 routerLink="/home"  routerDirection="forward">
-        <ion-icon class="footerIcon" name="home-outline"></ion-icon>
-        <div class="touch">
-        <h4>Home</h4>
-       </div>  
-    </ion-col>
-      <ion-col offset-1 col-10 routerLink="/cart"  routerDirection="forward">
-        <ion-icon class="footerIcon" name="cart-outline"></ion-icon>
-        <div class="touch">
-          <h4>Cart</h4>
-         </div> 
-      </ion-col>
-      <ion-col offset-1 col-10 routerLink="/profil"  routerDirection="forward">
-        <ion-icon class="footerIcon" name="person-outline"></ion-icon>
-        <div class="touch">
-          <h4>Profil</h4>
-         </div> 
-      </ion-col>
-      <ion-col offset-1 col-10 routerLink="/order"  routerDirection="forward">
-        <ion-icon class="footerIcon" name="cube-outline"></ion-icon>
-        <div class="touch">
-          <h4>Order...</h4>
-         </div> 
-      </ion-col>
-    </ion-row>
+  <ion-toolbar >
+    <ion-tabs>
+      <ion-tab-bar color="dark">
+        <ion-tab-button routerLink="/home"  routerDirection="forward">
+          <ion-icon name="home-outline"></ion-icon>
+          <ion-label>Home</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button routerLink="/cart"  routerDirection="forward">
+          <ion-icon name="cart-outline"></ion-icon>
+          <ion-label>Cart</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button routerLink="/account"  routerDirection="forward">
+          <ion-icon name="person-circle-outline"></ion-icon>
+          <ion-label>Profil</ion-label>
+        </ion-tab-button>
+    
+        <ion-tab-button routerLink="/order"  routerDirection="forward">
+          <ion-icon name="cube-outline"></ion-icon>
+          <ion-label>Order</ion-label>
+        </ion-tab-button>
+      </ion-tab-bar>
+    
+    </ion-tabs>
   </ion-toolbar>
+  
 </ion-footer>

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Storage } from '@ionic/storage';
-import { Features, Product } from '../../../models/product';
+import { Product } from '../../../models/product';
 import { ActivatedRoute, Router, NavigationExtras } from '@angular/router';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { Displays } from 'src/models/display';
@@ -11,6 +11,8 @@ import { FirestoreDataService } from '../../firestore-data.service';
 import { IonImg } from '@ionic/angular';
 import { Order, Shipment } from 'src/models/order';
 import { CartItem } from 'src/models/cartItem';
+import { GooglePayButtonModule } from '@google-pay/button-angular';
+import { promise } from 'protractor';
 
 @Component({
   selector: 'app-product',
@@ -22,229 +24,221 @@ export class ProductPage implements OnInit {
 
   @ViewChild('image', { static: false }) imageRef: IonImg;
 
-  slidersOpts = {
-    slidesPerView: 3
-  };
   data: Product;
-  product: Product[];
-  url = [];
-  colores = [];
-  sizes = [];
-  pictures: string[];
-  db = [];
-  recommended = [];
-  price: number = 0;
-  sizing: string = "";
-  color: string = "";
-  orderQty: number = 1;
-  image: string = "";
-  name: string = "";
-  description: string = "";
-  brand: string = "";
-  rating: number = 0;
-  features: Features[] = [];
-  category: string = "";
-  qty: number = 0;
-  shipment: string = "";
-  policy: boolean;
-  shippingFee: number = 0.00;
-  deliveryFee: number = 0.00;
-  taxFee: number = 0.00;
-  about: Text = null;
-  status: boolean = false;
-  ref?: string = "";
-  availability: string = "";
-  display: Displays;
-  connected: boolean;
-  haspicture: boolean = false;
-  hascolor: boolean = false;
-  hassize: boolean = false;
-  paused = false
-  viewImage = false;
-
-
-  constructor(private route: ActivatedRoute, private router: Router, private afSG: AngularFireStorage,
-    private afAuth: AngularFireAuth, private firestoreData: FirestoreDataService, private storage: Storage) {
-    this.display = {} as Displays;
-    this.data = {} as Product;
-    this.features = [];
-    this.pictures = [];
-    this.afAuth.authState.subscribe(auth => {
-      if (!auth) {
-        this.connected = false;
-      } else {
-        this.connected = true;
-      }
-    });
-
-    //this.getPicturesURL(this.color);
-
-    this.db = [
-      'assets/images/lbjsneaker.png',
-      'assets/images/lvshoes.png',
-      'assets/images/nike.png',
-
-    ];
-
-    /*   this.product = this.firestoreData.getFirestoreData(); */
-    this.getPriceByFeature(this.color, this.sizing);
-
+  details: CartItem;
+  dynamicPrice = 0;
+  dynamicQty = 0;
+  dynamicPictures = [];
+  initialColor = '';
+  initialSize = '';
+  orderQty = 1;
+  searchQuery = '';
+  constructor(private route: ActivatedRoute, private router: Router, 
+     private firestoreData: FirestoreDataService, private storage: Storage) {
+    
   }
 
   ngOnInit() {
+   
     this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.data = this.router.getCurrentNavigation().extras.state.product;
+        this.dynamicPrice = this.data.caracteristic[0].price;
+        this.dynamicQty = this.data.caracteristic[0].qty;
+        this.dynamicPictures = this.data.models[0].pictures;
+        this.initialColor = this.data.models[0].id;
+        this.initialSize = this.data.size[0];
       }
     });
-    this.getProductDetails();
-
-  }
-
-  getProductDetails() {
-    // console.log(this.data);
-    this.name = this.data.name;
-    this.description = this.data.description;
-    this.brand = this.data.brand;
-    this.rating = this.data.rating;
-    this.features = this.data.features;
-    this.category = this.data.category;
-    this.qty = this.data.qty;
-    this.shipment = this.data.shipment;
-    this.policy = this.data.policy;
-    this.shippingFee = this.data.shippingFee;
-    this.deliveryFee = this.data.deliveryFee;
-    this.about = this.data.about;
-    this.status = this.data.status;
-    this.ref = this.data.ref;
-    this.availability = this.data.availability;
-    this.display = this.data.display;
     this.browsingHistoric(this.data);
-    if (!isNullOrUndefined(this.features)) {
-      this.data.features.map(hexa => {
-        if (hexa.color !== "") {
-          this.colores.push({
-            strColor: hexa.color
-          });
-        }
-
-      });
-      this.data.features.map(size => {
-        if (size.size !== "") {
-          this.sizes.push({
-            itemsize: size.size
-          });
-        }
-
-      });
-
-      if (this.colores.length > 1) {
-        this.hascolor = true;
-        this.color = this.colores[0].strColor;
-        this.getPicturesURL(this.colores[0].strColor);
-      } else {
-        this.getPicturesURL("");
-      }
-      if (this.sizes.length > 1) {
-        this.hassize = true;
-        this.sizing = this.sizes[0].itemsize;
-      }
-      if (this.sizes.length > 1 && this.colores.length > 1) {
-        this.getPriceByFeature(this.colores[0].strColor, this.sizes[0].itemsize);
-      } else
-        if (this.colores.length < 1 && this.sizes.length > 1) {
-          this.getPriceByFeature("", this.sizes[0].itemsize);
-        } else {
-          this.getPriceByFeature(this.colores[0].strColor, "");
-        }
-    } //if !isNullOrUndefined
-
-  }
-  setsize(size: string) {
-    this.sizing = size;
-    this.getPriceByFeature(this.color, size);
-  }
-  setcolor(color: string) {
-    this.color = color;
-    this.getPicturesURL(color);
-  }
-  getPicturesURL(color: string) {
-    let fireUrl: string[] = [];
-    if (color !== "" && color !== null) {
-      for (let feat of this.features) {
-        if (feat.color == color) {
-          fireUrl = feat.pictures;
-        }
-      }
-    } else {
-      for (let feat of this.features) {
-        if (color !== feat.color) {
-          fireUrl = feat.pictures;
-        }
-      }
-
-    }
-    /* if(fireUrl.length > 0){
-      this.haspicture = true;
-      this.pictures.length = 0;
-      fireUrl.forEach(pic=>{
-        this.afSG.ref(pic).getDownloadURL().subscribe(url=>{
-            this.pictures.push(url);
-        });
-      });
-    } */
-    fireUrl.forEach(pic => {
-      this.haspicture = true;
-      this.pictures.push(pic);
-    });
-    console.log(this.pictures);
-  }
-  getPriceByFeature(color: string, size: string) {
-
-    if (color !== null && color !== "" && size !== null && size !== "") {
-      for (let feature of this.features) {
-        if (feature.color === color && feature.size === size) {
-          this.price = feature.price;
-        }
-      }
-    } else
-      if (color === "" && size !== "") {
-        for (let feature of this.features) {
-          if (feature.size === size) {
-            this.price = feature.price;
-          }
-        }
-      } else
-        if (color !== "" && size === "") {
-          for (let feature of this.features) {
-            if (feature.color === color) {
-              this.price = feature.price;
-            }
-          }
-        }
-        else {
-          for (let feature of this.features) {
-            if (feature.color === color && feature.size == size) {
-              this.price = feature.price;
-            }
-          }
-
-        }
-    //console.log(this.price); 
-
   }
 
-  loadImage() {
-    this.viewImage = true;
+  picturesLoading(color: string){
+    this.data.models.forEach(model=>{
+      if(model.id==color){
+        this.dynamicPictures = model.pictures;
+      }
+    })
     
   }
-  willLoadImage(image:string) {
-    this.viewImage = false;
-    this.image = image;
+
+  priceLoading(color: string, size: string){
+    this.data.caracteristic.forEach(c=>{
+      if(c.color==this.initialColor && c.size == this.initialSize){
+        this.dynamicPrice = c.price;
+      }
+    })
+  }
+
+  setColor(selectedColor: string)
+{ 
+  for(let model of this.data.models){
+    document.getElementById(model.id).style.border="none";
+  }
+  this.initialColor = selectedColor;
+  document.getElementById(selectedColor).style.border="4px solid black";
+  document.getElementById(selectedColor).style.borderRadius="50%";
+  this.priceLoading(this.initialColor, this.initialSize);
+  this.picturesLoading(this.initialColor);
+}  
+
+  setSize(selectedSize: string)
+  {
+    for(let size of this.data.size){
+      document.getElementById(size).setAttribute('color','medium');
+    }
+    this.initialSize = selectedSize
+    document.getElementById(selectedSize).setAttribute('color','tertiary');
+    this.priceLoading(this.initialColor, this.initialSize);
+  }
+
+  adjustqty(pressed: string) {
+    if (pressed === 'minus') {
+      if (this.orderQty !== 1) {
+        this.orderQty--;
+      } else {
+
+      }
+    }
+    if (pressed === 'plus') {
+      this.orderQty++;
+    }
+  }
+
+
+  addToCart(item: Product) {
+    let isAdded: boolean = false;
+    
+    this.storage.get("cart").then((data: CartItem[]) => {
+      if (data === null || data.length === 0) {
+        data = [];
+        data.push(this.setItem(item));
+      } else {
+        for (let item of data) {
+          if (item.picture === this.dynamicPictures[0]) {
+            item.qty = this.orderQty;
+            isAdded = true;
+          }
+        }
+        if (!isAdded) {
+          data.push(this.setItem(item));
+        }
+      }
+      this.storage.set("cart", data);
+      this.router.navigate(['/cart']);
+    }); 
+
+  }
+
+  setItem(item_details: Product){
+    this.details = {} as CartItem;
+    this.details.name = item_details.name;
+    this.details.brand =  item_details.brand;
+    this.details.category =  item_details.category;
+    this.details.qty =  this.orderQty;
+    this.details.size =  this.initialSize;
+    this.details.color =  this.initialColor;
+    this.details.shippingFee =  item_details.shippingFee;
+    this.details.deliveryFee =  item_details.deliveryFee;
+    this.details.taxFee =  item_details.taxFee;
+    this.details.deliveryDate =  item_details.deliveryDate;
+    this.details.picture = this.dynamicPictures[0];
+    this.details.price = this.dynamicPrice;
+    return this.details;
+  }
+
+  prepareOrder(item: Product) {
+    let shipment = {} as Shipment;
+    shipment.goods_departure = item.shipment;
+    shipment.shipping_destination = '';
+    shipment.status = 'Not shipped yet';
+    shipment.carrier = '';
+    shipment.trackingnumber = '';
+   
+    let prepareOrder: Order = {
+      orderId: this.crypto(),
+      items: [this.setItem(item)],
+      date_order: new Date(Date.now()),
+      order_qty: this.orderQty,
+      amount: this.orderQty * this.dynamicPrice,
+      shipment: shipment,
+    }
+    return prepareOrder;
+  }
+
+  crypto() {
+    let date = Date.now();
+    let productname = this.data.name.substring(0, 2).toUpperCase();
+    let _character = ['F', 'A', 'S', 'H', 'I', 'O', 'N', 'T', 'R', 'B', 'E', 'U', 'Y'];
+    let sequence: number = Math.floor(Math.random() * 100);
+    let index: number = Math.floor(Math.random() * 12);
+    let encryption: string = _character[index] + _character[index + 1] + sequence + productname + "-" + date;
+    return encryption;
+  }
+
+  willLoadImage() {
+    this.getLiked();
+    document.getElementById('loading').removeAttribute('hidden');
+  }
+  loadImage(image:string) {
+    document.getElementById('loading').setAttribute('hidden','true');
   }
   errorLoad() {
     this.imageRef.src = '<your_default_img>';
   }
+
+  
+
+  authorized(args: Product) {
+
+    if (this.firestoreData.getAuthState() === true){
+   const navigationExtras: NavigationExtras = {
+     state: {
+       order: this.prepareOrder(args)
+     }
+   };
+   this.router.navigate(['/place-order'], navigationExtras);
+    }else{
+    const navigationExtras: NavigationExtras = {
+      state: {
+        order: this.prepareOrder(args),
+      }
+    };
+    this.router.navigate(['/login'], navigationExtras);
+     }
+ } 
+
+
+  search(){
+    if(this.searchQuery!=='' || this.searchQuery!==null){
+      const navigationExtras: NavigationExtras = {
+        state: {
+          query: this.searchQuery
+        }
+      };
+     
+      this.router.navigate(['/searchquery'], navigationExtras);
+    }
+   
+  }
+ 
+
+/*   loadImage(image:string) {
+    if(this.color!=='' && this.sizing!=''){
+      document.getElementById(this.color).style.border="4px dotted #5260ff";
+      document.getElementById(this.sizing).style.border="4px dotted #5260ff";
+    }
+    
+    
+    this.image = image;
+   
+  }
+  
+  errorLoad() {
+    this.imageRef.src = '<your_default_img>';
+  }
+
+  
 
   adjustqty(pressed: string) {
     if (pressed === 'minus') {
@@ -271,12 +265,8 @@ export class ProductPage implements OnInit {
 
   addToCart(item_details: Product) {
     let isAdded: boolean = false;
-    let features = {} as Features;
-    features.price = this.price;
-    features.size = this.sizing;
-    features.color = this.color;
     item_details.features = [];
-    item_details.features.push(features);
+    item_details.features.push(this.selectedFeature);
     this.storage.get("cart").then((data: CartItem[]) => {
       if (data === null || data.length === 0) {
         data = [];
@@ -309,27 +299,27 @@ export class ProductPage implements OnInit {
   }
 
   prepareOrder() {
-    let features = {} as Features;
     let myItem = {} as Product;
     let shipment = {} as Shipment;
-    myItem.features = [];
+    let method = {} as Paymethod;
     let products: Product[] = [];
-    features.price = this.price;
-    features.size = this.sizing;
-    features.color = this.color;
     myItem = this.data;
+    myItem.orderedqty = this.orderQty;
     myItem.ref = this.image;
     myItem.qty = this.orderQty;
-    myItem.features.push(features);
+    myItem.features = [];
+    myItem.features.push(this.selectedFeature);
     shipment.goods_departure = myItem.shipment;
+    method.method = "";
     products.push(myItem);
     let prepareOrder: Order = {
       orderId: this.crypto(),
       product: products,
       date_order: new Date(Date.now()),
       order_qty: this.orderQty,
-      amount: this.orderQty * features.price,
-      shipment: shipment
+      amount: this.orderQty * this.selectedFeature.price,
+      shipment: shipment,
+      payment: method
     }
     // console.log(prepareOrder);
     return prepareOrder;
@@ -353,7 +343,7 @@ export class ProductPage implements OnInit {
      };
      this.router.navigate(['/login'], navigationExtras);
       }
-  }
+  } */
 
   browsingHistoric(reference: Product) {
     
@@ -365,7 +355,7 @@ export class ProductPage implements OnInit {
           historic.push(reference);
         } else {
           for (let _string of historic) {
-            if (_string === reference) {
+            if (_string.description === reference.description) {
               _string = reference;
               isAdded = true;
             }
@@ -381,9 +371,23 @@ export class ProductPage implements OnInit {
 
   }
 
-  liked(reference: string) {
+  getLiked(){
+    this.storage.get("likeItems").then((liked: Product[]) => {
+      if (liked !== null || liked.length !== 0) {
+        liked.forEach(element => {
+          if(element.models[0].pictures[0] == this.data.models[0].pictures[0]){
+            document.getElementById('heart').setAttribute('color','danger');
+          }
+        });
+      }
+    }).catch(err=>{
+      console.log("no like items not found or empty");
+    });
+  }
+
+  liked(reference: Product) {
     let isAdded: boolean = false;
-    this.storage.get("liked").then((liked: string[]) => {
+    this.storage.get("likeItems").then((liked: Product[]) => {
       if (liked === null || liked.length === 0) {
         liked = [];
         liked.push(reference);
@@ -398,9 +402,14 @@ export class ProductPage implements OnInit {
           liked.push(reference);
         }
       }
-      this.storage.set("liked", liked);
+      this.storage.set("likeItems", liked).then(()=> document.getElementById('heart').setAttribute('color','danger'));
     });
   }
 }
+
+
+
+
+
 
 
