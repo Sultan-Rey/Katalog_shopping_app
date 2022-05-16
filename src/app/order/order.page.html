@@ -1,15 +1,10 @@
-<ion-header mode=ios>
-  <ion-toolbar  style=" --background: #031432;">
-    <ion-buttons style="margin-top:5%;" slot="start">
-      <ion-back-button></ion-back-button>
-    </ion-buttons>
-    <ion-searchbar id="searchbar" debounce="500" mode=ios style="color: black !important; width: 80vw; margin: 0 auto; margin-top:5%;" align-center placeholder="search">
-    </ion-searchbar>
-  </ion-toolbar>
- </ion-header>
+<app-page-header></app-page-header>
 
 <ion-content>
  
+  <div>
+    <ion-searchbar placeholder="search for orders"></ion-searchbar>
+  </div>
   <ion-item-group *ngFor="let order of orders | async">
   <ion-item-divider>
     <ion-label>{{getDate(order.date_order)}}</ion-label>
@@ -67,32 +62,4 @@
   </ion-item-group>
 
 </ion-content>
-<ion-footer>
-  <ion-toolbar >
-    <ion-tabs>
-      <ion-tab-bar color="dark">
-        <ion-tab-button routerLink="/home"  routerDirection="forward">
-          <ion-icon name="home-outline"></ion-icon>
-          <ion-label>Home</ion-label>
-        </ion-tab-button>
-    
-        <ion-tab-button routerLink="/cart"  routerDirection="forward">
-          <ion-icon name="cart-outline"></ion-icon>
-          <ion-label>Cart</ion-label>
-        </ion-tab-button>
-    
-        <ion-tab-button routerLink="/account"  routerDirection="forward">
-          <ion-icon name="person-circle-outline"></ion-icon>
-          <ion-label>Profil</ion-label>
-        </ion-tab-button>
-    
-        <ion-tab-button routerLink="/order"  routerDirection="forward">
-          <ion-icon name="cube-outline"></ion-icon>
-          <ion-label>Order</ion-label>
-        </ion-tab-button>
-      </ion-tab-bar>
-    
-    </ion-tabs>
-  </ion-toolbar>
-  
-</ion-footer>
+<app-page-footer></app-page-footer>

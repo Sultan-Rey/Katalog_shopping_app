@@ -7,7 +7,7 @@
      
       <ion-grid>
         <ion-row>
-          <ion-col size="6" *ngFor="let item of product| async">
+          <ion-col size="6" *ngFor="let item of product$| async">
               <ion-card-content (click)="goTo(item)" style="padding-bottom: 0;"  >
                 <ion-img style="box-sizing:border-box;" (click)="goTo(item)" [src]="item.models[0].pictures[0]"></ion-img>
               </ion-card-content>
@@ -28,8 +28,10 @@
                       <span class="dot" *ngIf="color.color!==''" [style.background]="color.color"></span>
                     </div>
                   </div> 
-                    <ion-icon [id]="'icoAdd'+item.description" *ngIf="!isItemInWishList(item.description)" (click)="putItemInWishList(item)" size="small" color="danger" slot="end" name="heart-outline"></ion-icon>
-                    <ion-icon [id]="'icoIn'+item.description" style="display: none;" size="small" color="danger" slot="end" name="heart"></ion-icon>
+                  <ng-container *ngFor="let likeitem of likeItems">
+                    <ion-icon  (click)="putItemInWishList(item)" size="small" color="danger" slot="end" [name]="item.description == likeitem.description? 'heart-outline':'heart'"></ion-icon>
+                  </ng-container>
+                  <ion-icon  *ngIf="likeItems==undefined || likeItems.length==0" size="small" color="danger" slot="end" name="heart-outline"></ion-icon>
                 </ion-item>
               </ion-card-title>
           </ion-col>

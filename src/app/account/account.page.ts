@@ -2,11 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AngularFireAuth} from '@angular/fire/auth';
 import * as firebase from 'firebase';
-import { AngularFirestore } from '@angular/fire/firestore';
+import { AngularFirestore, DocumentData } from '@angular/fire/firestore';
 import { LoadingController } from '@ionic/angular';
 import { Storage } from '@ionic/storage';
 import { User } from 'src/models/user';
 import { isNullOrUndefined } from 'util';
+import { Product } from 'src/models/product';
+import { NavigationExtras, Router } from '@angular/router';
+import { Order } from 'src/models/order';
+import { FirestoreDataService } from '../firestore-data.service';
+import { Observable } from 'rxjs';
+import { CartItem } from 'src/models/cartItem';
 
 @Component({
   selector: 'app-account',
@@ -15,7 +21,12 @@ import { isNullOrUndefined } from 'util';
 })
 export class AccountPage implements OnInit {
 
+  browsing: Product[]=[];
+  likeItem: Product[]=[];
+  cartItem: CartItem[]=[];
+  orders$: Observable<DocumentData[]>;
   connected: boolean=false;
+  isOnline: boolean = false;
   welcomeWord: string ='';
   user: User; 
   passwordForm = this.formBuilder.group({
@@ -30,9 +41,16 @@ export class AccountPage implements OnInit {
     ]
   }
 
-  constructor(private formBuilder: FormBuilder, private fireauth: AngularFireAuth, 
-    private afstore: AngularFirestore, private loadingcontroller: LoadingController, private storage: Storage) 
-  {  this.fireauth.authState.subscribe(auth => {
+  constructor(private formBuilder: FormBuilder, private fireauth: AngularFireAuth, private router: Router, 
+    private afstore: AngularFirestore, private fireService: FirestoreDataService, private loadingcontroller: LoadingController, private storage: Storage) 
+  {  
+    this.isOnline = this.fireService.getConnexionState();
+    console.log(this.isOnline);
+    this.getBrowsingHistoric();
+    this.getLikeItems();
+    this.getCartItems();
+    this.fireService.getFirestoreOrder().then((your_order)=> this.orders$ = your_order);
+    this.fireauth.authState.subscribe(auth => {
     if (!auth){
       this.connected = false;
       this.welcomeWord = 'Manage your account';
@@ -97,4 +115,50 @@ export class AccountPage implements OnInit {
           this.welcomeWord = 'Welcome '+this.user.name;
   }
 
-}
+
+  getBrowsingHistoric(){
+    this.storage.get("browsing").then((historic:Product[])=>{
+        if(historic.length!==0 && historic!==null){
+          this.browsing = historic;
+        }
+    }).catch(err=>{
+      console.log("no browsing data found");
+    });
+   return this.browsing;
+  }
+
+  getLikeItems(){
+    this.storage.get("likeItem").then((liked:Product[])=>{
+      if(liked.length!==0 && liked!==null){
+        this.likeItem = liked;
+      }
+      
+    }).catch(err=>{
+      console.log("no like items data found");
+    });
+   return this.likeItem;
+  }
+
+  getCartItems(){
+    this.storage.get("cart").then((cart:CartItem[])=>{
+      if(cart.length!==0 && cart!==null){
+        this.cartItem = cart;
+      }
+      
+    }).catch(err=>{
+      console.log("no like items data found");
+    });
+   return this.likeItem;
+  }
+
+
+  navigateTo(route: string){
+      const navigationExtras: NavigationExtras = {
+        state: {
+          direction: route
+        }
+      };
+      this.router.navigate(['/historic'], navigationExtras);
+    }
+   
+    }

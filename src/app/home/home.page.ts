@@ -24,6 +24,7 @@ export class HomePage {
   @ViewChild('image', { static: false }) imageRef: IonImg;
 
   items: Product[];
+  connected: boolean;
   product$: Observable<Product[]>;
   test$: Observable<Product[]>;
   categories$: Observable<Categories[]>
@@ -65,11 +66,11 @@ export class HomePage {
   
   constructor(private router: Router, private firestoreData: FirestoreDataService, private db: AngularFirestore,
               private storage: Storage, private navCtrl: NavController) {
-
+                this.connected = this.firestoreData.getConnexionState();
                 this.navigation = ["Buy by categories", "Wish List", "Recent Views","Today Deals","By Tomorrow", "Kindness", "Policy", "profil"];
-                this.getBrowsingHistoric();
-                this.getLikeItems();
-                this.getSavedItems();
+                //this.getBrowsingHistoric();
+                //this.getLikeItems();
+                //this.getSavedItems();
                 //this.slides = this.firebaseData.getSlidesDatabase();
                 this.product$ = this.firestoreData.getProducts();
                 this.homepane$ = this.firestoreData.getHomeDesign();
@@ -183,7 +184,7 @@ var x = setInterval(function() {
           }
         }
     }).catch(err=>{
-      console.log("no like items data found");
+      console.log("no saved items data found");
     });
    return this.savedItem;
   }

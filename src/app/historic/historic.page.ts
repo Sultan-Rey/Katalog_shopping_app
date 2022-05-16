@@ -53,7 +53,7 @@ export class HistoricPage implements OnInit {
   updateCheck(product: Product, checkCase: string){
     let check:boolean = false;
     try{
-      if(checkCase == 'Wish List' && this.browsing.length!==0){
+      if(checkCase == 'Wish List' && this.likesItems.length!==0){
         for(let item of this.likesItems){
           if(item.description == product.description){
             check = true;

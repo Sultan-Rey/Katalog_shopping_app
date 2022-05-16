@@ -8,6 +8,7 @@ import { FirestoreDataService} from 'src/app/firestore-data.service';
 import { Storage } from '@ionic/storage'
 import { decimalDigest } from '@angular/compiler/src/i18n/digest';
 import { LocalStorageService } from 'src/app/local-storage.service';
+import { isNullOrUndefined } from 'util';
 @Component({
   selector: 'app-categories',
   templateUrl: './categories.page.html',
@@ -20,10 +21,13 @@ export class CategoriesPage implements OnInit {
   query: string='';
   islike: boolean = false;
   result: number =0;
-  product: Observable<Product[]>;
+  product$: Observable<Product[]>;
+  likeItems: Product[];
   constructor(private route: ActivatedRoute, private router: Router, private lstorage: LocalStorageService,
               private storage: Storage, private firestoreData: FirestoreDataService) {
-               
+               this.likeItems = [];
+            this.likeItems = this.lstorage.getLiked();
+              console.log(this.likeItems);
                       }
 
  
@@ -33,9 +37,9 @@ export class CategoriesPage implements OnInit {
         this.data = this.router.getCurrentNavigation().extras.state.item;
         this.option = this.router.getCurrentNavigation().extras.state.option;
         if(this.option == 'category'){
-          this.product = this.firestoreData.filterByCategory(this.data);
+          this.product$ = this.firestoreData.filterByCategory(this.data);
         }else if(this.option == 'brand'){
-          this.product = this.firestoreData.filterByBrand(this.data);
+          this.product$ = this.firestoreData.filterByBrand(this.data);
         }
       }
     });
@@ -53,13 +57,18 @@ export class CategoriesPage implements OnInit {
 
   
   isItemInWishList(description: string){
-    let isInList: boolean = false
-    this.lstorage.getLiked().forEach(item=>{
-      if(item.description == description){
-        isInList = true;
-         document.getElementById("icoIn"+item.description).style.display="";
-      }
-    })
+    let isInList: boolean = false;
+    if(this.lstorage.getLiked().length!==0 && !isNullOrUndefined(this.lstorage.getLiked())){
+      this.lstorage.getLiked().forEach(item=>{
+        if(item.description == description){
+          isInList = true;
+           document.getElementById("icoIn"+item.description).style.display="";
+        }
+      });
+    }else{
+      console.log('no liked items found');
+    }
+    
     return isInList;
   }
 

@@ -10,7 +10,7 @@ export class LocalStorageService {
 
   browsingItems: Product[];
   itemsLikes:Product[];
-  cart: CartItem[];
+  cart: any;
   savedForLater: CartItem[];
   constructor(private storage: Storage) { }
 
@@ -38,7 +38,7 @@ export class LocalStorageService {
   }
 
   getCartItems(){
-    this.storage.get("cart").then((data:CartItem[])=>{
+    this.storage.get("cart").then((data:any)=>{
       this.cart= data;   
     }).catch(err=>{
       console.log("cart not found or empty");  

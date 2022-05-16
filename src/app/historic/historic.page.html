@@ -6,7 +6,6 @@
   <div class="container-fluid">
     <ion-grid>
       <ion-row *ngIf="data!=='Buy by categories' && data!=='brand'">
-  
         <ng-container  *ngFor="let item of items| async">
           <ion-col size="6" *ngIf="updateCheck(item,data) && (data=='Recent Views' || data =='Wish List')">
             <ion-card-content style="padding-bottom: 0;" (click)="goTo(item)">
@@ -63,8 +62,8 @@
           </ion-card-title>
       </ion-col>
         </ng-container>
-       
       </ion-row>
+
       <ion-row *ngIf="data=='Buy by categories'">
         <ion-card *ngFor="let categ of categs| async" >
           <ion-card-content (click)="linkTo(categ.categoryName,'category')">

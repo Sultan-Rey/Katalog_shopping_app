@@ -9,8 +9,10 @@
   </div>  <!-- End Navigation -->
 
   <div style="margin-bottom:0;" class="alert alert-warning"> <!-- Messages Bar -->
-    <h6>Help Ukrainian people now!</h6>
+    <h6 *ngIf="connected">Help Ukrainian people now!</h6>
+    <ion-button *ngIf="!connected" expand="block" color="danger">Connexion failed, Want you retry to connect?</ion-button>
   </div>
+  
   <div>
 
     <ion-slides *ngIf="slides$ | async as slide" [options]="sliderOpts">  <!-- Main Slideshow-->

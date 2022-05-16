@@ -134,6 +134,7 @@ export class ProductPage implements OnInit {
     this.details = {} as CartItem;
     this.details.name = item_details.name;
     this.details.brand =  item_details.brand;
+    this.details.description = item_details.description;
     this.details.category =  item_details.category;
     this.details.qty =  this.orderQty;
     this.details.size =  this.initialSize;

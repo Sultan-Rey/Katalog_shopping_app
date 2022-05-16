@@ -55,6 +55,9 @@ export class FirestoreDataService {
     return this.connected;
   }
   
+  getConnexionState(){
+    return globalThis.navigator.onLine;
+  }
 
   getMainSlides(){
     this.slidesDocument = this.afs.collection('homepane').doc('d0pWnLNzch6ACeFKJmrj');
@@ -97,28 +100,32 @@ export class FirestoreDataService {
    this.product.subscribe(observer => {
    
       observer.forEach(e => {
-       
-          this.items.push({
-            code: e.code,
-            name: e.name,
-            description: e.description,
-            brand: e.brand,
-            rating: e.rating,
-            category: e.category,
-            qty: e.qty,
-            deliveryDate: e.deliveryDate,
-            shipment: e.shipment,
-            policy: e.policy,
-            shippingFee: e.shippingFee,
-            deliveryFee: e.deliveryFee,
-            taxFee:e.taxFee,
-            about: e.about,
-            models: e.models,
-            caracteristic: e.caracteristic,
-            status: e.status,
-            availability: e.availability,
-            display: e.display
-          });
+     
+
+        this.items.push({
+          code: e.code,
+          name: e.name,
+          description: e.description,
+          brand: e.brand,
+          rating: e.rating,
+          category: e.category,
+          qty: e.qty,
+          deliveryDate: e.deliveryDate,
+          shipment: e.shipment,
+          policy: e.policy,
+          shippingFee: e.shippingFee,
+          deliveryFee: e.deliveryFee,
+          taxFee:e.taxFee,
+          about: e.about,
+          models: e.models,
+          caracteristic: e.caracteristic,
+          status: e.status,
+          availability: e.availability,
+          display: e.display
+        });
+        
+      
+          
 
       });
 

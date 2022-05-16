@@ -7,8 +7,6 @@ import { isNullOrUndefined } from 'util';
 import { CartItem } from 'src/models/cartItem';
 import { FirestoreDataService } from '../firestore-data.service';
 import { ToastController } from '@ionic/angular';
-import { LocalStorageService } from '../local-storage.service';
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-cart',
@@ -18,31 +16,83 @@ import { Observable } from 'rxjs';
 export class CartPage implements OnInit {
 
   element='';
-  itemFromDB: Observable<Product[]>;
   item: Product;
+  browsing: Product[]=[];
   cart: CartItem[] = [];
   saved: CartItem[]=[];
-  
+  isOnline: boolean = false;
+  noItem: boolean;
+  nosaved: boolean;
   orderQty:number = 0;
   totalcost:number = 0.00;
   
-  constructor(private toastconroller: ToastController,private router: Router, private fstoreService: 
-    FirestoreDataService, private lstorage: LocalStorageService, private storage: Storage) {
-   this.cart = this.lstorage.getCartItems();
-   this.saved = this.lstorage.getsavedforlater();
-   this.itemFromDB = this.fstoreService.getProducts();
+  constructor(private toastconroller: ToastController,private router: Router, private fstoreService: FirestoreDataService, private storage: Storage) {
+    this.getsavedforlater();this.getCartItems();
+    this.getBrowsingHistoric();
   }
 
   ngOnInit() {
+   this.noItem = false;
+   this.nosaved = false;
+  }
+ 
+  
+  checkForCartUpdate(){
+    let arr2 = this.fstoreService.getFirestoreData();
+    const res1 = arr2.filter((item1) => !this.cart.find(item2 => item1.description === item2.description )) 
+console.log(res1)
+console.log(arr2);
+    
+  }
+
+  getCartItems(){
+    this.totalcost = 0.00;
+    this.storage.get("cart").then((data:CartItem[])=>{
+      this.cart= data;
+       
+    }).catch(err=>{
+      console.log("cart not found or empty");
+      
+    }); 
+  }
+  getsavedforlater(){
+    this.storage.get("savedforlater").then((data:CartItem[])=>{
+        this.saved=data;
+        this.nosaved = false;
+    }).catch(err=>{
+      console.log("saved not found or empty");
+      this.nosaved = true;
+    });
    
   }
-   
+
+  getBrowsingHistoric(){
+    this.storage.get("browsing").then((historic:Product[])=>{
+        if(historic.length!==0 && historic!==null){
+          
+          for(let product of this.fstoreService.getFirestoreData()){
+            for(let item of historic){
+              if(product.name==item.name && product.description==item.description){
+                this.browsing.push(product);                
+              }
+            }
+            
+          }
+        }
+    }).catch(err=>{
+      console.log("no browsing data found");
+    });
+   return this.browsing.reverse;
+  }
+
+  
 
   adjustqty(pressed: string, item: CartItem)
   {
     if(pressed === 'minus'){
       if(item.qty !== 1){
        item.qty--;
+       
       }else{
 
       } 
@@ -50,19 +100,11 @@ export class CartPage implements OnInit {
     if(pressed === 'plus'){
       item.qty++;
     }
+    this.storage.set('cart', this.cart);
   }
 
-  calculCost(){
-    
-    let totalamount: number=0;
-    this.totalcost = 0.00;
-    this.cart.forEach(element=>{
-          totalamount += element.price * element.qty;
-        });
-        this.cart.forEach(element=>{
-            this.orderQty+= element.qty;
-        });
-     return this.totalcost = totalamount;   
+  getTotal() {
+    return this.cart.reduce((i, j) => i + j.price * j.qty, 0);
   }
 
   savedForLater(item: CartItem){
@@ -98,7 +140,7 @@ export class CartPage implements OnInit {
         this.storage.set("savedforlater",saved);
     })
    }
-   this.saved = this.lstorage.getsavedforlater();
+   this.getsavedforlater();
   }
 
   remove(item:CartItem){
@@ -136,7 +178,6 @@ export class CartPage implements OnInit {
     let id: string = "CA"+Math.floor(Math.random()*1000)+"-"+date;
     return id;
   }
-
   checkout(cartItems: any){
     let shipment = {} as Shipment;
     if(this.totalcost>0.00){
@@ -150,7 +191,7 @@ export class CartPage implements OnInit {
       items: cartItems,
       date_order: new Date(Date.now()),
       order_qty: this.orderQty,
-      amount: this.totalcost,
+      amount: this.getTotal(),
       shipment: shipment,
     }
       const navigationExtras: NavigationExtras = {
@@ -173,7 +214,7 @@ export class CartPage implements OnInit {
         isfound = true;
       }
     }
-  
+   
     if(isfound){
       const navigationExtras: NavigationExtras = {
         state: {
