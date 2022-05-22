@@ -41,17 +41,16 @@ export class LoginPage implements OnInit {
     
        await this.loadingcontroller.create({
         cssClass: 'my-custom-class',
-        message: 'Please wait...'
-        
+        message: 'Please wait...',
+        duration: 5000
        }).then( async (control)=>{
          control.present();
          
          this.afAuth.signInWithEmailAndPassword(data.mail.trim(), data.password.trim()).then(async () => {
           this.dataUser = {mail: '',password: ''};
-            /* this.afirestore.collection("user").doc((await this.afAuth.currentUser).uid).get().subscribe(user=>{
-              this.user = new User(user.data());
-            }); */
+            
             if((await this.afAuth.currentUser).emailVerified){
+              this.storage.set("user", (await this.afAuth.currentUser).uid.toString())
               const navigationExtras: NavigationExtras = {
                 state: {
                   order: this.data

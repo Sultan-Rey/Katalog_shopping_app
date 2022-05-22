@@ -187,6 +187,7 @@ console.log(arr2);
     shipment.carrier = '';
     shipment.trackingnumber = '';
     let prepareOrder: Order = {
+      customerId: 'code',
       orderId: this.crypto(),
       items: cartItems,
       date_order: new Date(Date.now()),

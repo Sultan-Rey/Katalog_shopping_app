@@ -10,7 +10,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { User } from 'src/models/user';
 import { Message } from 'src/models/message';
 import { HomeDesign } from 'src/models/homeDesign';
-import { ToastController } from '@ionic/angular';
+import { Storage } from '@ionic/storage';
 import { Categories } from 'src/models/category';
 import { Brands } from 'src/models/brands';
 import { Slides } from 'src/models/slides';
@@ -35,14 +35,14 @@ export class FirestoreDataService {
   user: Observable<User[]>;
   slides: Observable<Slides>;
   homeDesign: Observable<HomeDesign[]>;
-  orderData: Observable<DocumentData[]>;
+  orderData: Observable<Order[]>;
   msg: Message[];
   items: Product[];
   app_user: User[];
   items_ordered: Order[];
-  userType: string='';
+  userId: string='';
   connected: boolean;
-  constructor( private afs: AngularFirestore, private afAuth: AngularFireAuth) { }
+  constructor( private afs: AngularFirestore, private afAuth: AngularFireAuth, private storage: Storage) { }
 
   getAuthState(){
     this.afAuth.authState.subscribe(auth => {
@@ -163,7 +163,7 @@ export class FirestoreDataService {
     return this.product;
   }
 
-  getOrderAsadmin(){
+ /*  getOrderAsadmin(){
     this.items_ordered = new Array();
     this.ordersCollection = this.afs.collection('orders');
     this.orderData = this.ordersCollection.doc().collection("customer_order").valueChanges();
@@ -183,15 +183,20 @@ export class FirestoreDataService {
     });
     });
     return this.items_ordered;
+  } */
+   getFirestoreOrder(){
+       
+        this.ordersCollection = this.afs.collection('orders',q=>q.where("customerId","==",this.userId));
+        this.orderData = this.ordersCollection.valueChanges();
+     return this.orderData;
+
   }
-  async getFirestoreOrder(){
-    let userId= (await this.afAuth.currentUser).uid;
-    this.items_ordered = new Array();
-    this.ordersCollection = this.afs.collection('orders');
-    this.orderData = this.ordersCollection.doc(userId).collection("customer_order").valueChanges();
-      return this.orderData;
-   
-  }
+  getOrder(param:string){
+       
+    this.ordersCollection = this.afs.collection('orders',q=>q.where("customerId","==",param));
+    this.orderData = this.ordersCollection.valueChanges();
+ return this.orderData;
+}
 
   getUsers(){
     this.usersCollection = this.afs.collection('user');

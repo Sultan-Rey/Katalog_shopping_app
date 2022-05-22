@@ -63,8 +63,7 @@ export class HelpcenterPage implements OnInit {
     if(context=='ORDER'){
       if(!this.dialogFlow.box2 && !this.dialogFlow.box3){
         this.dialogFlow.box1 = true;
-        this.fdataService.getFirestoreOrder().then((your_order)=>{
-         this.order = your_order;     } );
+        this.order = this.fdataService.getFirestoreOrder();
       }
       
     }

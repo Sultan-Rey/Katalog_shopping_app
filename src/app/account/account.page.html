@@ -79,13 +79,13 @@
       <h4>Recent Orders</h4>
       <ng-container *ngIf="orders$|async as order">
         <ion-slides style="margin-bottom:20px;" [options]="{ slidesPerView: '3', zoom: false, grabCursor: true }">
-          <ng-container *ngFor="let item of order">
+          <ng-container *ngFor="let item of orders$| async">
             <ion-slide style="margin: 20px">
               <ion-item-group>
-                <ion-img [src]="item.models[0].pictures[0]" style="max-height: 300px; max-width: 300px"></ion-img>
+                <ion-img [src]="item.items.picture" style="max-height: 300px; max-width: 300px"></ion-img>
                 <ion-row>
                   <ion-badge color="danger">
-                    <h5>{{item.caracteristic[0].price|currency}}</h5>
+                    <h5>{{item.items.price|currency}}</h5>
                   </ion-badge>
                 </ion-row>
               </ion-item-group>
@@ -93,10 +93,11 @@
           </ng-container>
             </ion-slides>
             <ion-label routerLink="/order" routerDirection="forward" color="tertiary">see all orders</ion-label>
-      </ng-container>
-      <div class="alert alert-default">
-        <ion-button class="border" expand="block" fill="clear">No recent orders found, start shopping now!</ion-button>
-      </div>
+            <div class="alert alert-default" *ngIf="order.length==0">
+              <ion-button class="border" expand="block" fill="clear">No recent orders found, start shopping now!</ion-button>
+            </div>
+          </ng-container>
+      
     </div>
     
     <div class="col-md-12 border p-4">

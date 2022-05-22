@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/auth';
 import { AngularFirestore, DocumentData } from '@angular/fire/firestore';
 import { NavigationExtras, Router, ActivatedRoute } from '@angular/router';
 import { Storage } from '@ionic/storage';
+import * as firebase from 'firebase';
 import { Observable } from 'rxjs';
 import { Order } from 'src/models/order';
 import { User } from 'src/models/user';
@@ -15,13 +17,23 @@ import { FirestoreDataService } from '../firestore-data.service';
 })
 export class OrderPage implements OnInit {
   data: string;
-  orders: Observable<DocumentData[]>;
+  orders$: Observable<DocumentData[]>;
   user: User;
   userType: string='';
-  constructor(private router: Router, private route: ActivatedRoute, private afirestore: AngularFirestore, 
+  connected: boolean = false;
+  constructor(private router: Router, private route: ActivatedRoute, private afAuth: AngularFireAuth, 
     private fdservice: FirestoreDataService, private storage: Storage) { 
-     this.fdservice.getFirestoreOrder().then((your_order)=> this.orders = your_order);
-  }
+      this.afAuth.authState.subscribe(auth => {
+        if (!auth.emailVerified) {
+          this.connected = false;
+        } else {
+          this.getallOrder();
+        }
+      });
+      
+  
+        
+    }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
@@ -32,18 +44,20 @@ export class OrderPage implements OnInit {
 
   }
 
+  getallOrder(){
+    this.afAuth.currentUser.then((user)=>{
+      if(user.emailVerified){
+        this.orders$ = this.fdservice.getOrder(user.uid.toString());
+      }
+    })
+    
+  }
+
   getDate(date:any){
     let dating: Date= new Date(date.seconds*1000 + date.nanoseconds);
       return dating.toDateString() ;
     }
 
-
-   /*  reorder(order:Order){
-      const navigationExtras:NavigationExtras = {
-        state:{ data: order}
-      }
-      this.router.navigate(['/'], navigationExtras);
-    } */
     details(order:Order){
       const navigationExtras:NavigationExtras = {
         state:{ order: order, type: this.userType}

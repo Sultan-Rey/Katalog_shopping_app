@@ -24,11 +24,12 @@ export class AccountPage implements OnInit {
   browsing: Product[]=[];
   likeItem: Product[]=[];
   cartItem: CartItem[]=[];
-  orders$: Observable<DocumentData[]>;
+  orders$: Observable<Order[]>;
   connected: boolean=false;
   isOnline: boolean = false;
   welcomeWord: string ='';
   user: User; 
+  userId: string;
   passwordForm = this.formBuilder.group({
     old: ['', [Validators.required, Validators.minLength(8), Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$')]],
     new: ['', [Validators.required, Validators.minLength(8), Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$')]]
@@ -45,11 +46,11 @@ export class AccountPage implements OnInit {
     private afstore: AngularFirestore, private fireService: FirestoreDataService, private loadingcontroller: LoadingController, private storage: Storage) 
   {  
     this.isOnline = this.fireService.getConnexionState();
-    console.log(this.isOnline);
     this.getBrowsingHistoric();
     this.getLikeItems();
     this.getCartItems();
-    this.fireService.getFirestoreOrder().then((your_order)=> this.orders$ = your_order);
+    this.getUid();
+    
     this.fireauth.authState.subscribe(auth => {
     if (!auth){
       this.connected = false;
@@ -111,10 +112,19 @@ export class AccountPage implements OnInit {
     
     this.afstore.collection("user").doc(userUID).get().subscribe(user=>{
               this.user = new User(user.data());
+              this.welcomeWord = 'Welcome '+this.user.name;
             });
-          this.welcomeWord = 'Welcome '+this.user.name;
+            
+          
   }
 
+
+  getUid(){
+    this.storage.get("user").then((uid:string)=>{
+      this.userId = uid;
+      this.orders$ = this.fireService.getOrder(this.userId);
+    });
+  }
 
   getBrowsingHistoric(){
     this.storage.get("browsing").then((historic:Product[])=>{

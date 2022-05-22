@@ -157,6 +157,7 @@ export class ProductPage implements OnInit {
     shipment.trackingnumber = '';
    
     let prepareOrder: Order = {
+      customerId: new Date(Date.now())+"-"+"theUsername",
       orderId: this.crypto(),
       items: [this.setItem(item)],
       date_order: new Date(Date.now()),
