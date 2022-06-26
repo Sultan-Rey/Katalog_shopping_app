@@ -22,8 +22,8 @@
   </div>
   
 
-  <div class="p-4 border">
-    <div class="container row border p-4">
+  <div class="p-4 border alert alert-tertiary">
+    <div class="container-fluid row border p-4">
 
       <div class="col-md">
         <small *ngIf="browsing.length!==0" style="padding-left: 10px; 
@@ -73,9 +73,9 @@
     </div>
   </div>
  
-  <div class="row">
+  
 
-    <div *ngIf="connected" class="col-md-12 border p-4">
+    <div *ngIf="connected" class="col-md-12  alert alert-tertiary border p-4">
       <h4>Recent Orders</h4>
       <ng-container *ngIf="orders$|async as order">
         <ion-slides style="margin-bottom:20px;" [options]="{ slidesPerView: '3', zoom: false, grabCursor: true }">
@@ -100,7 +100,7 @@
       
     </div>
     
-    <div class="col-md-12 border p-4">
+    <div class="col-md-12 alert alert-tertiary border p-4">
       <h4>Your cart</h4>
       <ng-container *ngIf="cartItem.length!==0 && isOnline">
         <ion-slides style="margin-bottom:20px;" [options]="{ slidesPerView: '3', zoom: false, grabCursor: true }">
@@ -127,7 +127,7 @@
       </ion-chip> 
     </div>
 
-    <div class="col-md-12 border p-4">
+    <div class="col-md-12 alert alert-tertiary border p-4">
       <h4>Favorites</h4>
       <ng-container *ngIf="likeItem.length!==0 && isOnline">
         <ion-slides style="margin-bottom:20px;" [options]="{ slidesPerView: '3', zoom: false, grabCursor: true }">
@@ -155,7 +155,7 @@
       </ion-chip> 
     </div>
 
-    <div class="col-md-12 border p-4">
+    <div class="col-md-12 alert alert-tertiary border p-4">
       <h4>Recent Browsing Items</h4>
       <ng-container *ngIf="browsing.length!==0 && isOnline">
         <ion-slides style="margin-bottom:20px;" [options]="{ slidesPerView: '3', zoom: false, grabCursor: true }">
@@ -183,7 +183,7 @@
       </ion-chip>
     </div>
 
-    <div class="col-md-12 border p-4">
+    <div class="col-md-12 alert alert-tertiary border p-4">
       <h4>Login and password</h4>
       <div *ngIf="connected" class="container">
         <ion-card>
@@ -233,10 +233,6 @@
 
     </div>
     
-  
-    
-  </div>
+
   
 </ion-content>
-
-<app-page-footer></app-page-footer>

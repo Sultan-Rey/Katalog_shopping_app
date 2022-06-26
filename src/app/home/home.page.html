@@ -1,33 +1,38 @@
 <app-page-header></app-page-header>
 <ion-content [fullscreen]="true">
-  <div class="navbar navbar-expand-lg" style="background: #031432;">  <!--Navigation-->
-    <ion-slides [options]="{ slidesPerView: '3.5', zoom: false, grabCursor: true }">
-      <ion-slide (click)="navigateTo(common)" *ngFor="let common of navigation">
-        <a class="nav-link text-light">{{common}}</a>
-      </ion-slide>
-    </ion-slides>
-  </div>  <!-- End Navigation -->
-
-  <div style="margin-bottom:0;" class="alert alert-warning"> <!-- Messages Bar -->
-    <h6 *ngIf="connected">Help Ukrainian people now!</h6>
-    <ion-button *ngIf="!connected" expand="block" color="danger">Connexion failed, Want you retry to connect?</ion-button>
+  <div class="container-fluid" style="background: #031432;">  <!--Navigation-->
+    <div class="scrollmenu">
+      <a (click)="navigateTo(common)" *ngFor="let common of navigation">{{common}}</a> 
+    </div>
   </div>
+
+  <ion-slides style="margin-bottom:0;" style="background: #c7aa53;"> <!-- Messages Bar -->
+    <ion-slide>
+      <ion-label *ngIf="connected">Help Ukrainian people now!</ion-label>
+    </ion-slide>
+     <!--   <ion-button *ngIf="!connected" expand="block" color="danger">Connexion failed, Want you retry to connect?</ion-button>
+ -->  </ion-slides>
   
   <div>
 
-    <ion-slides *ngIf="slides$ | async as slide" [options]="sliderOpts">  <!-- Main Slideshow-->
-      <ion-slide  (click)="linkTo(s.direction, 'slide')" *ngFor="let s of slide.slides">
+    <ion-slides *ngIf="slides$ | async as slide" >  <!-- Main Slideshow-->
+      <ng-container *ngFor="let s of slide.slides">
+        <ion-slide *ngIf="s.version=='web'"  (click)="linkTo(s.direction, 'slide')" >
           <ion-img [src]="s.image" [alt]="slide.alt"></ion-img>
       </ion-slide>
+      </ng-container>
+        
+      
+      
     </ion-slides>
   </div>
 
 
-  <div class="container-lg overflow-hidden content-box">  <!-- Panel Division-->
+  <div class="container-fluid p-4 overflow-hidden content-box">  <!-- Panel Division-->
     <div class="row g-4">
       <ng-container *ngFor="let panel of homepane$ | async">
 
-        <div class="col-md-6 col-12" *ngIf="panel.panelType=='box'&& panel.active==true">
+        <div class="col-12 col-lg-4 col-md-6" *ngIf="panel.panelType=='box'&& panel.active==true">
           <div class="p-3 border" [ngStyle]="{'background': panel.panelName=='Advertising' ? 'none' : 'white'}">
             <h2>{{panel.description}}</h2>
             <div *ngIf="panel.panelName!=='category' && panel.panelName!=='brand'" class="row overflow-hidden"
@@ -45,7 +50,7 @@
             <div *ngIf="panel.panelName=='category'" class="row">
               <ng-container *ngFor="let item of categories$|async">
                 <ion-label ion-button (click)="linkTo(item.categoryName, 'category')" class="col-6" style="margin-bottom:15px">
-                  <img src="{{(item.image)}}" />
+                  <ion-img style="width: 164px; height: 164px;" src="{{(item.image)}}"></ion-img>
                   <h6>{{item.categoryName}}</h6>
                 </ion-label>
               </ng-container>
@@ -54,7 +59,7 @@
             <div *ngIf="panel.panelName=='brand'" class="row">
               <ng-container *ngFor="let item of brands$| async">
                 <ion-label (click)="linkTo(item.brandName, 'brand')" class="col-6" style="margin-bottom:15px">
-                  <img src="{{(item.logo)}}" />
+                  <ion-img style="width: 164px; height: 164px;" src="{{(item.logo)}}"></ion-img>
                   <h6>{{item.brandName}}</h6>
                 </ion-label>
               </ng-container>
@@ -65,7 +70,7 @@
           </div>
         </div>
 
-        <div class="col col-md-12 col-sm-12 p-3" *ngIf="panel.panelType=='slider' && panel.active==true">
+        <div class="col col-md-12 col-sm-12 col-lg-12 p-3" *ngIf="panel.panelType=='slider' && panel.active==true">
           <div class="p-3" style="background:white;">
             <h2 style="display:inline;">{{panel.description}}</h2>
             <ion-button fill="clear" *ngIf="panel.panelId=='best_seller'" color="primary">{{panel.buttonText}}
@@ -76,7 +81,7 @@
                   <ion-slide *ngIf="common.display.position == panel.panelId" (click)="goTo(common)"
                     style="margin: 20px">
                     <ion-item-group>
-                      <ion-img [src]="common.models[0].pictures[0]" style="max-height: 300px; max-width: 300"></ion-img>
+                      <ion-img [src]="common.models[0].pictures[0]" style="max-height: 300px; max-width: 300px"></ion-img>
                     </ion-item-group>
                   </ion-slide>
                 </ng-container>
@@ -87,7 +92,7 @@
           </div>
         </div>
 
-        <div class="col-md-12" *ngIf="panel.panelType=='deals' && panel.active==true">
+        <div class="col-12 col-md-6 col-lg-6" *ngIf="panel.panelType=='deals' && panel.active==true">
           <ion-item lines="none">
             <ion-label>
               Hot Deals<ion-icon color="danger" name="flame"></ion-icon>
@@ -152,7 +157,7 @@
 
 
 </ion-content>
-<app-page-footer></app-page-footer>
+
 
 
 

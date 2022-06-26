@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { AngularFireStorage } from '@angular/fire/storage';
+import { AngularFireStorage, AngularFireUploadTask } from '@angular/fire/storage';
 import { AngularFireDatabase } from '@angular/fire/database';
 import { Storage } from '@ionic/storage';
 import { Product } from '../../../models/product';
@@ -13,6 +13,13 @@ import { Order, Shipment } from 'src/models/order';
 import { CartItem } from 'src/models/cartItem';
 import { GooglePayButtonModule } from '@google-pay/button-angular';
 import { promise } from 'protractor';
+import { Observable } from 'rxjs';
+import { Reviews } from 'src/models/reviews';
+import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
+import { AngularFirestore } from '@angular/fire/firestore';
+import { first } from 'rxjs/operators';
+import * as firebase from 'firebase';
+import { User } from 'src/models/user';
 
 @Component({
   selector: 'app-product',
@@ -25,32 +32,61 @@ export class ProductPage implements OnInit {
   @ViewChild('image', { static: false }) imageRef: IonImg;
 
   data: Product;
+  user: User;
+  ngFireUploadTask: AngularFireUploadTask;
   details: CartItem;
+  reviewing: Reviews;
+  review='';
+  similar$: Observable<Product[]>;
   dynamicPrice = 0;
   dynamicQty = 0;
   dynamicPictures = [];
+  reviewPicture = '../../../assets/icon/addpic.png'
   initialColor = '';
   initialSize = '';
   orderQty = 1;
   searchQuery = '';
-  constructor(private route: ActivatedRoute, private router: Router, 
-     private firestoreData: FirestoreDataService, private storage: Storage) {
+  constructor(private route: ActivatedRoute, private router: Router,private camera: Camera,
+     private afstore: AngularFirestore, private afAuth: AngularFireAuth,
+     private firestoreData: FirestoreDataService, private storage: Storage, private angularefireSG: AngularFireStorage) {
     
   }
 
   ngOnInit() {
+    this.data = {} as Product;
+    this.data.models = [];
+    this.router.url;
+    const queryParams = new globalThis.URLSearchParams(this.router.url.split("?")[1]);
+    const queryString = queryParams.get("productId");
+    if(queryString!==null){
+      this.afstore.collection('product', q=>q.where("code","==",queryString))
+      .get().subscribe(item=>{
+       const snap = item.docs[0];
+       const product = snap.data() as Product;
+       this.data = product;
+        this.similar$ = this.firestoreData.filterByCategory(this.data.category);
+        this.dynamicPrice = this.data.caracteristic[0].price;
+          this.dynamicQty = this.data.caracteristic[0].qty;
+          this.dynamicPictures = this.data.models[0].pictures;
+          this.initialColor = this.data.models[0].id;
+          this.initialSize = this.data.size[0];
+          this.browsingHistoric(this.data);
+       console.log(this.data);
+       
+     });
+    }
+    console.log(this.data.code);
+    
+    
    
     this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.data = this.router.getCurrentNavigation().extras.state.product;
-        this.dynamicPrice = this.data.caracteristic[0].price;
-        this.dynamicQty = this.data.caracteristic[0].qty;
-        this.dynamicPictures = this.data.models[0].pictures;
-        this.initialColor = this.data.models[0].id;
-        this.initialSize = this.data.size[0];
+        
       }
     });
-    this.browsingHistoric(this.data);
+    
+   
   }
 
   picturesLoading(color: string){
@@ -73,10 +109,9 @@ export class ProductPage implements OnInit {
   setColor(selectedColor: string)
 { 
   for(let model of this.data.models){
-    document.getElementById(model.id).style.border="none";
+    document.getElementById(model.id).style.borderRadius="0";
   }
   this.initialColor = selectedColor;
-  document.getElementById(selectedColor).style.border="4px solid black";
   document.getElementById(selectedColor).style.borderRadius="50%";
   this.priceLoading(this.initialColor, this.initialSize);
   this.picturesLoading(this.initialColor);
@@ -192,22 +227,23 @@ export class ProductPage implements OnInit {
   
 
   authorized(args: Product) {
-
-    if (this.firestoreData.getAuthState() === true){
-   const navigationExtras: NavigationExtras = {
-     state: {
-       order: this.prepareOrder(args)
-     }
-   };
-   this.router.navigate(['/place-order'], navigationExtras);
-    }else{
-    const navigationExtras: NavigationExtras = {
-      state: {
-        order: this.prepareOrder(args),
-      }
-    };
-    this.router.navigate(['/login'], navigationExtras);
-     }
+    this.afAuth.authState.subscribe(auth=>{
+      if(auth.emailVerified){
+        const navigationExtras: NavigationExtras = {
+          state: {
+            order: this.prepareOrder(args)
+          }
+        };
+        this.router.navigate(['/place-order'], navigationExtras);
+      }else{
+        const navigationExtras: NavigationExtras = {
+          state: {
+            order: this.prepareOrder(args),
+          }
+        };
+        this.router.navigate(['/login'], navigationExtras);
+         }
+    });
  } 
 
 
@@ -223,8 +259,61 @@ export class ProductPage implements OnInit {
     }
    
   }
- 
 
+   async openLibrary() {
+    const options: CameraOptions = {
+      quality: 100,
+      destinationType: this.camera.DestinationType.DATA_URL,
+      encodingType: this.camera.EncodingType.JPEG,
+      mediaType: this.camera.MediaType.PICTURE,
+      targetWidth: 1000,
+      targetHeight: 1000,
+      sourceType: this.camera.PictureSourceType.PHOTOLIBRARY
+    };
+    return await this.camera.getPicture(options);
+  }
+
+  async addPhoto() {
+    const libraryImage = await this.openLibrary();
+    this.reviewPicture ='data:image/jpg;base64,' + libraryImage;
+  } 
+ 
+  async sendReviews(text:string){
+    this.afstore.collection("user").doc((await this.afAuth.currentUser).uid).get().subscribe(user=>{
+      this.user = new User(user.data());
+      if(this.reviewPicture!=='' && this.reviewPicture!==null){
+        const filePath = this.user.name+new Date(Date.now());
+      const imageRef = this.angularefireSG.ref(filePath);
+      this.ngFireUploadTask = imageRef.putString(this.reviewPicture, 'data_url');
+      this.ngFireUploadTask.then(snap=>{
+        console.log(snap.downloadURL);
+        this.reviewing = {} as Reviews;
+        this.reviewing.customerName = this.user.name;
+        this.reviewing.productId = this.data.code;
+        this.reviewing.reviewImage = this.reviewPicture;
+        this.reviewing.reviewText = text;
+        this.reviewing.reviewDate = new Date(Date.now());
+      })
+      }else{
+        this.reviewing = {} as Reviews;
+        this.reviewing.customerName = this.user.name;
+        this.reviewing.productId = this.data.code;
+        this.reviewing.reviewImage = this.reviewPicture;
+        this.reviewing.reviewText = text;
+        this.reviewing.reviewDate = new Date(Date.now());
+      }
+      this.afstore.collection("review").add(this.reviewing);
+      
+    });
+    
+  }
+
+  prev(slides){
+    slides.slidePrev();
+  }
+  next(slides){
+    slides.slideNext();
+  }
 /*   loadImage(image:string) {
     if(this.color!=='' && this.sizing!=''){
       document.getElementById(this.color).style.border="4px dotted #5260ff";

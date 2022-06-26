@@ -225,12 +225,7 @@ var x = setInterval(function() {
   }
 
   goTo(item: any): void {
-    const navigationExtras: NavigationExtras = {
-      state: {
-        product: item
-      }
-    };
-    this.router.navigate(['/product'], navigationExtras);
+    this.navCtrl.navigateForward("/product?productId="+item.code);
   }
 
   

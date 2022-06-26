@@ -47,10 +47,6 @@ const routes: Routes = [
     path: 'helpcenter',
     loadChildren: () => import('./helpcenter/helpcenter.module').then( m => m.HelpcenterPageModule)
   },
-  {
-    path: 'settings',
-    loadChildren: () => import('./settings/settings.module').then( m => m.SettingsPageModule)
-  },
   
   {
     path: 'account',

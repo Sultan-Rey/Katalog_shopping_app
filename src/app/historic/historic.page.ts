@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { NavController } from '@ionic/angular';
 import { Storage} from '@ionic/storage';
 import { Observable } from 'rxjs';
 import { Brands } from 'src/models/brands';
@@ -22,7 +23,7 @@ export class HistoricPage implements OnInit {
   categs: Observable<Categories[]>;
   brands: Observable<Brands[]>;
   constructor(private storage: Storage, private fData: FirestoreDataService, private route: ActivatedRoute, 
-              private router: Router, private lStorage: LocalStorageService) 
+              private router: Router, private lStorage: LocalStorageService, private navCtrl: NavController) 
   {   }
 
   ngOnInit() {
@@ -85,12 +86,7 @@ export class HistoricPage implements OnInit {
   }
   
   goTo(item: any): void {
-    const navigationExtras: NavigationExtras = {
-      state: {
-        product: item
-      }
-    };
-    this.router.navigate(['/product'], navigationExtras);
+    this.navCtrl.navigateForward("/product?productId="+item.code);
   }
   
 }

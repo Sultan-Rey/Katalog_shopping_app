@@ -13,14 +13,13 @@ import { AngularFireDatabaseModule } from '@angular/fire/database';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 import { AngularFirestoreModule} from '@angular/fire/firestore';
-import { NewproductModalComponent } from './newproduct-modal/newproduct-modal.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ImagePicker } from '@ionic-native/image-picker/ngx';
 import { HttpClientModule} from '@angular/common/http';
 import { Camera } from '@awesome-cordova-plugins/camera/ngx';
 import { NgxIonicImageViewerModule } from 'ngx-ionic-image-viewer';
 import { SharedviewsModule } from './sharedviews/sharedviews.module';
-import { PageHeaderComponent } from './page-header/page-header.component';
+
 
 
 
@@ -35,7 +34,7 @@ export const firebaseConfig = {
 
 
 @NgModule({
-  declarations: [AppComponent, NewproductModalComponent],
+  declarations: [AppComponent],
   entryComponents: [],
   imports: [BrowserModule,
     FormsModule,

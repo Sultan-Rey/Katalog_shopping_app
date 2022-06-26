@@ -9,6 +9,7 @@ import { Storage } from '@ionic/storage'
 import { decimalDigest } from '@angular/compiler/src/i18n/digest';
 import { LocalStorageService } from 'src/app/local-storage.service';
 import { isNullOrUndefined } from 'util';
+import { NavController } from '@ionic/angular';
 @Component({
   selector: 'app-categories',
   templateUrl: './categories.page.html',
@@ -24,7 +25,7 @@ export class CategoriesPage implements OnInit {
   product$: Observable<Product[]>;
   likeItems: Product[];
   constructor(private route: ActivatedRoute, private router: Router, private lstorage: LocalStorageService,
-              private storage: Storage, private firestoreData: FirestoreDataService) {
+              private storage: Storage, private firestoreData: FirestoreDataService, private navCtrl: NavController) {
                this.likeItems = [];
             this.likeItems = this.lstorage.getLiked();
               console.log(this.likeItems);
@@ -46,14 +47,9 @@ export class CategoriesPage implements OnInit {
      }
      
 
-  goTo(item: any): void {
-    const navigationExtras: NavigationExtras = {
-      state: {
-        product: item
-      }
-    };
-    this.router.navigate(['/product'], navigationExtras);
-  }
+     goTo(item: any): void {
+      this.navCtrl.navigateForward("/product?productId="+item.code);
+    }
 
   
   isItemInWishList(description: string){

@@ -1,8 +1,11 @@
 <app-page-header></app-page-header>
 <ion-content>
-  <div class="alert alert-dark"> <!-- Messages Bar -->
-    <h4>{{data}}</h4>
-  </div>
+  <ion-item lines="none" color="light">
+    <ion-label>{{data | uppercase}}</ion-label>
+    <ion-button fill="clear" slot="end">Filter
+      <ion-icon name="chevron-forward-outline"></ion-icon>
+    </ion-button>
+  </ion-item>
   <div class="container-fluid">
     <ion-grid>
       <ion-row *ngIf="data!=='Buy by categories' && data!=='brand'">
@@ -88,4 +91,3 @@
     </ion-grid>
   </div>
 </ion-content>
-<app-page-footer></app-page-footer>

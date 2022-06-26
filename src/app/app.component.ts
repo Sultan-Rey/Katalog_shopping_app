@@ -31,14 +31,7 @@ export class AppComponent {
   }
 
   
-  navigateTo(category: string){
-    const navigationExtras: NavigationExtras = {
-      state: {
-        product: category
-      }
-    };
-    this.router.navigate(['/historic'], navigationExtras);
-  }
+  
 
   
 }
