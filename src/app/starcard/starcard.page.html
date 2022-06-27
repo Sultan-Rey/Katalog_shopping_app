@@ -1,0 +1,160 @@
+<ion-header  mode=ios>
+  <ion-toolbar  color="dark">
+    <ion-buttons slot="start">
+   <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-buttons>
+      <ion-title  class="width" mode=ios >
+        <ion-text size="LARGE" color="warning">
+          K</ion-text>
+          <ion-text color="danger"><ion-icon size="LARGE" name=cart></ion-icon></ion-text>
+          <ion-text >ta</ion-text><img title="app header" alt="image icon" class="icon" src="assets/icon/lipstick.png"/><ion-text>og</ion-text>
+        </ion-title>
+    </ion-buttons>
+
+  </ion-toolbar>
+  <ion-buttons>
+    <ion-item-divider>
+      <ion-label>Pay faster with your starcard</ion-label>
+    </ion-item-divider>
+  </ion-buttons>
+ </ion-header>
+
+<ion-content>
+
+  <div *ngIf="connected==false" name="authentification" class="ion-padding">
+    <ion-buttons>
+      <ion-button routerLink="/login" routerDirection="forward" expand="block">SIGN IN BEFORE USE STARCARD</ion-button>
+    </ion-buttons>
+  </div>
+  <div *ngIf="connected==true" name="starcard" class="ion-padding">
+
+    <div *ngIf="!starcard.activation" name="starcard_activation">
+      <ion-card>
+        <ion-item>
+          <ion-card-title class="ion-padding">STAR CARD 
+          </ion-card-title>
+          <ion-buttons slot="end">
+            <ion-radio-group >
+              <ion-chip [id]="child.id" [color]="tagDefaultColor[i]" (click)="changeTagColor(i)" *ngFor="let child of devise;let i = index">
+                <ion-radio (click)="selected(child)" ></ion-radio><ion-label>{{child}}</ion-label>
+              </ion-chip>
+            </ion-radio-group>
+            </ion-buttons>
+        </ion-item>
+       
+        <ion-card-subtitle class="ion-padding">Register to STAR CARD and benefits 10% off</ion-card-subtitle>
+        <ion-button size="small" (click)="register(starcard)" class="btn-register" expand="block" >Register Now</ion-button>
+        <ion-card-header>STAR CARD is an original KATALOG payment method which is secure and help you to pay easily</ion-card-header>
+        </ion-card>
+       
+    </div>
+    <div *ngIf="starcard.activation && isRegistred==true" name="starcard_content">
+
+      <div class="container">
+        <ion-item>
+          <ion-label>Star Card balance :</ion-label>
+          <ion-badge slot="end" color="medium">{{starcard.amount}}</ion-badge>
+        </ion-item>
+      </div>
+      <div class="container">
+        <ion-item>
+          <ion-label>Reedem your Star Card</ion-label>
+          <ion-chip slot="end">Devise : {{starcard.devise}}</ion-chip>
+        </ion-item>
+        <ion-item-sliding>
+          <ion-slides [options]="slidersOpts">
+            <ng-container *ngIf="starcard.devise=='USD'">
+              <ion-slide (click)="refill('USD',star)" *ngFor="let star of starReedemUSD"><ion-card>
+                <ion-card-content>
+                  <ion-card-title>{{star|currency}}</ion-card-title>
+                  <ion-card-subtitle>Add {{star|currency}} to your star card</ion-card-subtitle>
+                </ion-card-content>
+                </ion-card></ion-slide>
+            </ng-container>
+            <ng-container *ngIf="starcard.devise=='HTG'">
+              <ion-slide *ngFor="let star of starReedemHTG"><ion-card>
+                <ion-card-content>
+                  <ion-card-title>{{star}} gdes</ion-card-title>
+                  <ion-card-subtitle>Add {{star}} gdes to your star card</ion-card-subtitle>
+                </ion-card-content>
+                </ion-card></ion-slide>
+            </ng-container>
+          
+    
+          </ion-slides>
+        </ion-item-sliding>
+      </div>
+    
+      <div class="container">
+        <ion-list>
+          <ion-item><ion-label>Reedem Historic</ion-label></ion-item>
+          <ion-row>
+            <ion-col size="7"><b>Amount</b></ion-col>
+            <ion-col ><b>purchased date</b></ion-col>
+          </ion-row>
+          <ion-row *ngFor="let reedem of starcard.reedem">
+            <ion-col size="7"><ion-label>{{reedem.amount}}</ion-label></ion-col>
+            <ion-col ><ion-label>{{reedem.date|date}}</ion-label></ion-col>
+          </ion-row>
+          <ion-item><ion-label>Total Refilling</ion-label>
+                    <ion-badge slot="end">0.00$</ion-badge>
+          </ion-item>
+        </ion-list>
+        
+      </div>
+    
+      <div class="container">
+        <ion-list>
+          <ion-item><ion-label>Transactions</ion-label></ion-item>
+          <ion-row >
+            <ion-col size="4"><b>Order Id</b></ion-col>
+            <ion-col size="4"><b>Amount</b></ion-col>
+            <ion-col ><b>Transaction date</b></ion-col>
+          </ion-row>
+          <ion-row *ngFor="let transac of starcard.transactions">
+            <ion-col size="4"><ion-label> {{transac.orderId}} </ion-label></ion-col>
+            <ion-col size="4"><ion-label>{{transac.amount}}</ion-label></ion-col>
+            <ion-col ><ion-label>{{transac.date|date}}</ion-label></ion-col>
+          </ion-row>
+          <ion-item><ion-label>Total Transactions</ion-label>
+                    <ion-badge slot="end">0.00$</ion-badge>
+          </ion-item>
+        </ion-list>
+      </div>
+    </div>
+
+  </div>
+  
+ 
+</ion-content>
+<ion-footer>
+  <ion-toolbar class="footer">
+    <ion-row round>
+      <ion-col offset-1 col-10 routerLink="/home"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="home-outline"></ion-icon>
+        <div class="touch">
+        <h4>Home</h4>
+       </div>  
+    </ion-col>
+      <ion-col offset-1 col-10 routerLink="/cart"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="cart-outline"></ion-icon>
+        <div class="touch">
+          <h4>Cart</h4>
+         </div> 
+      </ion-col>
+      <ion-col offset-1 col-10 routerLink="/profil"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="person-outline"></ion-icon>
+        <div class="touch">
+          <h4>Profil</h4>
+         </div> 
+      </ion-col>
+      <ion-col offset-1 col-10 routerLink="/order"  routerDirection="forward">
+        <ion-icon class="footerIcon" name="cube-outline"></ion-icon>
+        <div class="touch">
+          <h4>Order...</h4>
+         </div> 
+      </ion-col>
+    </ion-row>
+  </ion-toolbar>
+</ion-footer>

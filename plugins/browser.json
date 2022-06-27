@@ -1,0 +1,39 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-androidx": {
+      "PACKAGE_NAME": "com.katalog.project"
+    },
+    "cordova-plugin-androidx-adapter": {
+      "PACKAGE_NAME": "com.katalog.project"
+    },
+    "cordova-plugin-camera": {
+      "PACKAGE_NAME": "com.katalog.project"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.katalog.project"
+    },
+    "cordova-plugin-ionic-keyboard": {
+      "PACKAGE_NAME": "com.katalog.project"
+    },
+    "cordova-plugin-ionic-webview": {
+      "PACKAGE_NAME": "com.katalog.project"
+    },
+    "cordova-plugin-splashscreen": {
+      "PACKAGE_NAME": "com.katalog.project"
+    },
+    "cordova-plugin-statusbar": {
+      "PACKAGE_NAME": "com.katalog.project"
+    },
+    "cordova-plugin-telerik-imagepicker": {
+      "PACKAGE_NAME": "com.katalog.project"
+    }
+  },
+  "dependent_plugins": {}
+}

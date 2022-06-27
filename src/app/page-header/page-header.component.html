@@ -1,0 +1,49 @@
+<ion-header mode="md">
+  <ion-toolbar style=" --background: #031432;"> <!--Toolbar I-->
+    <ion-buttons>
+      <ion-title (click)="routeTo('/home')" >
+        <ion-text style="font-size: 18px;"  size="small" color="warning">
+          K</ion-text>
+        <ion-text color="danger">
+          <ion-icon size="small" name=cart></ion-icon>
+        </ion-text>
+        <ion-text style="font-size: 18px;" color="light">TALOG</ion-text>
+      </ion-title>
+      <div class="container">
+          <div class="input-group">
+            <input type="text" [(ngModel)]="query"  (keypress)="search($event)"  id="searchField"  placeholder="Do you searching for something...?" debounce="500"
+              style=" width: 10vw;  margin: 0 auto;" class="form-control" aria-describedby="basic-addon1">
+            <div class="input-group-prepend">
+              <span (click)="search($event)" class="input-group-textmodified bg-warning" id="basic-addon1">
+                <ion-button fill="clear" size="icon-only">
+                  <ion-icon name="search"></ion-icon>
+                </ion-button>
+              </span>
+            </div>
+          </div>
+        </div>
+          
+            <ion-tab-button (click)="routeTo('cart')">
+              <ion-icon color="light" name="cart-outline"></ion-icon>
+              <ion-label *ngIf="cartLenght==0" color="light" >Cart</ion-label>
+              <ion-label *ngIf="cartLenght!=0" color="danger" >{{cartLenght}}</ion-label>
+            </ion-tab-button>
+        
+            <ion-tab-button (click)="routeTo('account')"  routerDirection="forward">
+              <ion-icon color="light"  name="person-circle-outline"></ion-icon>
+              <ion-label color="light" >Profil</ion-label>
+            </ion-tab-button>
+        
+            <ion-tab-button (click)="routeTo('order')"  routerDirection="forward">
+              <ion-icon color="light"  name="cube-outline"></ion-icon>
+              <ion-label color="light" >Order</ion-label>
+            </ion-tab-button>
+         
+        
+       
+    </ion-buttons>
+    
+    
+  </ion-toolbar> <!--End Toolbar II-->
+
+</ion-header>
