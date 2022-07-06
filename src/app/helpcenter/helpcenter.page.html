@@ -38,6 +38,20 @@
         </ion-card-subtitle>
       </ion-card-header>
     </ion-card>
+    <ion-card *ngIf="!connected">
+      <ion-card-title></ion-card-title>
+      <ion-card-content>
+        <ion-text color="dark">
+          <b>KINDNESS : </b>Please login as user first!
+        </ion-text>
+      </ion-card-content>
+      <ion-card-header>
+        <ion-card-subtitle>
+          <ion-button (click)="scenario('ORDER')" color="medium">Order issue</ion-button>
+          <ion-button (click)="scenario('OTHER')" color="light">Other ?</ion-button>
+        </ion-card-subtitle>
+      </ion-card-header>
+    </ion-card>
 
     <ion-card *ngIf="dialogFlow.box1">
      

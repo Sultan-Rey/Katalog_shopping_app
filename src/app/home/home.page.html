@@ -15,15 +15,12 @@
   
   <div>
 
-    <ion-slides *ngIf="slides$ | async as slide" >  <!-- Main Slideshow-->
+    <ion-slides *ngIf="slides$ | async as slide" [options]="sliderOpts" >  <!-- Main Slideshow-->
       <ng-container *ngFor="let s of slide.slides">
         <ion-slide *ngIf="s.version=='web'"  (click)="linkTo(s.direction, 'slide')" >
           <ion-img [src]="s.image" [alt]="slide.alt"></ion-img>
       </ion-slide>
       </ng-container>
-        
-      
-      
     </ion-slides>
   </div>
 
@@ -71,24 +68,39 @@
         </div>
 
         <div class="col col-md-12 col-sm-12 col-lg-12 p-3" *ngIf="panel.panelType=='slider' && panel.active==true">
-          <div class="p-3" style="background:white;">
+          <div  class="p-3" style="background:white;">
             <h2 style="display:inline;">{{panel.description}}</h2>
-            <ion-button fill="clear" *ngIf="panel.panelId=='best_seller'" color="primary">{{panel.buttonText}}
-            </ion-button>
-            <ng-container *ngIf="product$|async as _items; else slideSkeleton">
-              <ion-slides [options]="{ slidesPerView: '3', zoom: false, grabCursor: true }">
-                <ng-container *ngFor="let common of product$ | async ">
-                  <ion-slide *ngIf="common.display.position == panel.panelId" (click)="goTo(common)"
-                    style="margin: 20px">
-                    <ion-item-group>
-                      <ion-img [src]="common.models[0].pictures[0]" style="max-height: 300px; max-width: 300px"></ion-img>
-                    </ion-item-group>
-                  </ion-slide>
-                </ng-container>
-                <ion-button fill="clear" *ngIf="panel.panelId!=='best_seller'" color="primary">{{panel.buttonText}}
-                </ion-button>
-              </ion-slides>
-            </ng-container>
+            
+            <div class="row" *ngIf="product$|async as _items; else slideSkeleton">
+              <div class="col-lg-1">
+                <ion-thumbnail  >
+                  <ion-img (click)="next(slideshow)" style="width: 25%;padding-top: 60%;" src="../../assets/icon/arrow_left_picsart.png"></ion-img>
+                </ion-thumbnail>
+              </div>
+              <div  class="col-lg-10">
+                <ion-slides #slideshow [options]="{ slidesPerView: '3.5', zoom: false, speed:'2000', loop:true, grabCursor: true }">
+                  <ng-container *ngFor="let common of product$ | async ">
+                    <ion-slide *ngIf="common.display.position == panel.panelId" (click)="goTo(common)"
+                      style="margin: 20px">
+                      <ion-item-group>
+                        <ion-img [src]="common.models[0].pictures[0]" style="max-height: 350px; max-width: 350px"></ion-img>
+                      <ion-label>{{common.caracteristic[0].price|currency}}</ion-label>
+                      </ion-item-group>
+                    </ion-slide>
+                  </ng-container>
+                  <ion-button fill="clear" *ngIf="panel.panelId=='best_seller'" color="primary">{{panel.buttonText}}
+                  </ion-button>
+                  <!-- <ion-button fill="clear" *ngIf="panel.panelId!=='best_seller'" color="primary">{{panel.buttonText}}
+                  </ion-button> -->
+                </ion-slides>
+              </div>
+              <div class="col-lg-1">
+                <ion-thumbnail (click)="prev(slides)">
+                  <ion-img style="width: 25%; padding-top: 60%;" src="../../assets/icon/PicsArt_06-29-09.39.05.png"></ion-img>
+                </ion-thumbnail>
+              </div>
+            </div>
+           
           </div>
         </div>
 

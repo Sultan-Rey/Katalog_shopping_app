@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import {ActivatedRoute, NavigationExtras, Router} from '@angular/router';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument} from '@angular/fire/firestore';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { Observable } from 'rxjs';
 import { Product } from 'src/models/product';
-import { FirestoreDataService} from 'src/app/firestore-data.service';
+import { FirestoreDataService } from 'src/app/firestore-data.service';
 import { Storage } from '@ionic/storage'
 import { decimalDigest } from '@angular/compiler/src/i18n/digest';
 import { LocalStorageService } from 'src/app/local-storage.service';
@@ -17,65 +17,65 @@ import { NavController } from '@ionic/angular';
 })
 export class CategoriesPage implements OnInit {
 
-  data: string='';
+  data: string = '';
   option: string = '';
-  query: string='';
+  query: string = '';
   islike: boolean = false;
-  result: number =0;
+  result: number = 0;
   product$: Observable<Product[]>;
   likeItems: Product[];
   constructor(private route: ActivatedRoute, private router: Router, private lstorage: LocalStorageService,
-              private storage: Storage, private firestoreData: FirestoreDataService, private navCtrl: NavController) {
-               this.likeItems = [];
-            this.likeItems = this.lstorage.getLiked();
-              console.log(this.likeItems);
-                      }
+    private storage: Storage, private firestoreData: FirestoreDataService, private navCtrl: NavController) {
+    this.likeItems = [];
+    this.likeItems = this.lstorage.getLiked();
+    
+  }
 
- 
+
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.data = this.router.getCurrentNavigation().extras.state.item;
         this.option = this.router.getCurrentNavigation().extras.state.option;
-        if(this.option == 'category'){
+        if (this.option == 'category') {
           this.product$ = this.firestoreData.filterByCategory(this.data);
-        }else if(this.option == 'brand'){
+        } else if (this.option == 'brand') {
           this.product$ = this.firestoreData.filterByBrand(this.data);
         }
       }
     });
-     }
-     
+  }
 
-     goTo(item: any): void {
-      this.navCtrl.navigateForward("/product?productId="+item.code);
-    }
 
-  
-  isItemInWishList(description: string){
+  goTo(item: any): void {
+    this.navCtrl.navigateForward("/product?productId=" + item.code);
+  }
+
+
+  isItemInWishList(description: string) {
     let isInList: boolean = false;
-    if(this.lstorage.getLiked().length!==0 && !isNullOrUndefined(this.lstorage.getLiked())){
-      this.lstorage.getLiked().forEach(item=>{
-        if(item.description == description){
+    if (this.lstorage.getLiked().length !== 0 && !isNullOrUndefined(this.lstorage.getLiked())) {
+      this.lstorage.getLiked().forEach(item => {
+        if (item.description == description) {
           isInList = true;
-           document.getElementById("icoIn"+item.description).style.display="";
+          document.getElementById("icoIn" + item.description).style.display = "";
         }
       });
-    }else{
+    } else {
       console.log('no liked items found');
     }
-    
+
     return isInList;
   }
 
-  putItemInWishList(item:Product){
-    this.lstorage.addInWishList(item).then(()=>{
-      document.getElementById("icoAdd"+item.description).style.display="none";
-     this.isItemInWishList(item.description);
-    }).catch((reason)=>{
-      console.log('Exception : '+reason);
+  putItemInWishList(item: Product) {
+    this.lstorage.addInWishList(item).then(() => {
+      document.getElementById("icoAdd" + item.description).style.display = "none";
+      this.isItemInWishList(item.description);
+    }).catch((reason) => {
+      console.log('Exception : ' + reason);
     });
   }
 
-  
+
 }

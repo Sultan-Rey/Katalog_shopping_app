@@ -231,7 +231,12 @@ var x = setInterval(function() {
   
 
   
-
+  prev(slides){
+    slides.slidePrev();
+  }
+  next(slides){
+    slides.slideNext();
+  }
   
 
  

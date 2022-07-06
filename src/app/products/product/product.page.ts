@@ -227,8 +227,9 @@ export class ProductPage implements OnInit {
   
 
   authorized(args: Product) {
-    this.afAuth.authState.subscribe(auth=>{
-      if(auth.emailVerified){
+
+    this.storage.get("user").then((uid:string)=>{
+      if(!isNullOrUndefined(uid)){
         const navigationExtras: NavigationExtras = {
           state: {
             order: this.prepareOrder(args)
@@ -244,6 +245,7 @@ export class ProductPage implements OnInit {
         this.router.navigate(['/login'], navigationExtras);
          }
     });
+
  } 
 
 
