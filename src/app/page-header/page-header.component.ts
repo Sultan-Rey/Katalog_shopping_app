@@ -58,13 +58,7 @@ export class PageHeaderComponent implements OnInit {
   search(event){
     if(this.query!=='' && this.query!==null){
       if(event.key=='Enter' || event.type == 'click'){
-        const navigationExtras: NavigationExtras = {
-          state: {
-            query: this.query
-          }
-        };
-       
-        this.router.navigate(['/searchquery'], navigationExtras);
+        this.router.navigateByUrl(`categories/${this.query}`);
       }
     }
    

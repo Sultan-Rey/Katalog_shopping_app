@@ -69,3 +69,14 @@
         }
     }
 }
+
+
+h6, ion-card-subtitle{
+  font-size: 12px;
+  font-weight: bold;
+  font-family: 'Times New Roman', Times, serif;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}

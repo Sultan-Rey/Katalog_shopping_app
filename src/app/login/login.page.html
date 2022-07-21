@@ -1,8 +1,5 @@
 <ion-header>
   <ion-toolbar style=" --background: #031432;">
-    <ion-buttons  slot="start">
-      <ion-back-button color="light"></ion-back-button>
-    </ion-buttons>
     <ion-buttons routerLink="/home" routerDirection="back">
       <ion-title class="width">
         <ion-text size="LARGE" color="warning">
@@ -19,35 +16,119 @@
 <ion-content>
  
   <div class="container" style="padding-top: 50px;">
-    <ion-card class="container p-4">
-      <ion-title class="ion-padding">
-        <ion-img style="width:100px;height: 100px; margin: auto;" src="../../assets/icon/katalog_round_icon.PNG"></ion-img>
-    </ion-title>
-    <ion-item>
-      <ion-icon slot="start" name="person"></ion-icon>
-      <ion-label position="floating">Email or number phone</ion-label>
-      <ion-input type="text" [(ngModel)]="dataUser.mail" ></ion-input>
-    </ion-item>
- 
-    <ion-item>
-      <ion-icon slot="start" name="lock-closed"></ion-icon>
-      <ion-label position="floating">Password</ion-label>
-      <ion-input type="password" [(ngModel)]="dataUser.password"></ion-input>
-    </ion-item>
-    <section>
-      <ion-button expand="block" (click)="login(dataUser)">Connexion</ion-button>
-      <div class="forgot">
-      <ion-text>
-        <ion-label>Password forgot?</ion-label>
-      </ion-text>
-    </div>
-    </section>
+    <div class="row">
+      <div class="col-lg-8 col-md-12 col-12">
+        <div class="text-center">
+          <img src="../../assets/shopping_time.png" class="rounded" alt="...">
+          <h4>You enjoy shopping, We enjoy to make you happy</h4>
+          <small class="text-muted">login with you customer account and start shopping now</small>
+        </div>
+             </div>
 
-  <div id="signup">
-    <ion-label  color="primary" (click)="toSignUp()">I don't have account, signup for free</ion-label>
+      <div class="col-lg-4 col-md-12 col-12">
+        <div class="border rounded p-4">
+          <div class="container p-4">
+            <ion-img style="width:100px;height: 100px; margin: auto;" src="../../assets/icon/katalog_round_icon.PNG"></ion-img>
+            <ion-slide>
+              <ion-label>Welcome Home</ion-label>
+            </ion-slide>
+          </div>
+  
+          <div>
+            
+            <ion-item>
+              <ion-icon slot="start" name="person"></ion-icon>
+              <ion-label position="floating">Your email address</ion-label>
+              <ion-input type="text" [(ngModel)]="dataUser.mail" ></ion-input>
+            </ion-item>
+         
+            <ion-item>
+              <ion-icon slot="start" name="lock-closed"></ion-icon>
+              <ion-label position="floating">Password</ion-label>
+              <ion-input type="password" [(ngModel)]="dataUser.password"></ion-input>
+            </ion-item>
+            <section>
+              <ion-button expand="block" color="danger" (click)="login(dataUser)">Connexion</ion-button>
+              <div class="forgot">
+              <ion-text>
+                <ion-label>Password forgot?</ion-label>
+              </ion-text>
+            </div>
+            </section>
+          </div>
+        
+    
+      <div id="signup">
+        <ion-label  color="primary" (click)="toSignUp()">I don't have account, signup for free</ion-label>
+    </div>
+    
+      </div>
+     </div>
+    </div>
 </div>
-    </ion-card>
-       
-</div>
+
+  <!-- <div class="container" style="padding-top: 50px;">
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="border p-4">
+            <h5>Profil Information</h5>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="border p-4">
+            <h5>Update Password</h5>
+            <div  class="container">
+              <ion-card>
+                <ion-card-title class="ion-padding"> <h4>Change Password</h4></ion-card-title>
+                <ion-card-content>
+                  <ng-form [formGroup]="passwordForm" (ngSubmit)="submit()">
+                    <ion-item>
+                      <ion-chip>
+                        <ion-input type="password" class="field" formControlName="old" placeholder="Old Password"></ion-input>
+                               </ion-chip>
+                    </ion-item>
+                      <div *ngFor="let error of errorMessages.password" class="padding-left">
+                      <ng-container *ngIf="getOldPassword().hasError(error.type) && (getOldPassword().dirty || getOldPassword().touched)">
+                        <small style="color: red;" class="error-message">{{error.message}}</small>
+                      </ng-container>
+                    </div>
+                    <ion-item>
+                      <ion-chip>
+                        <ion-input type="password" class="field" formControlName="new" placeholder="New Password"></ion-input>
+                         </ion-chip>
+                    </ion-item>
+                     <div *ngFor="let error of errorMessages.password" class="padding-left">
+                      <ng-container *ngIf="getNewPassword().hasError(error.type) && (getNewPassword().dirty || getNewPassword().touched)">
+                        <small style="color: red;"  class="error-message">{{error.message}}</small>
+                      </ng-container>
+                    </div>
+                    <ion-item>
+                      <ion-button expand="block" type="submit">Change password</ion-button>
+                    </ion-item>
+                    
+                  </ng-form>
+                </ion-card-content>
+              </ion-card>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div> -->
 
 </ion-content>
+
+<ion-footer style=" --background: #031432;">
+  <ion-toolbar>
+    <ion-item lines="none">
+      <ion-buttons>
+        <ion-button>
+          <ion-label>Designed by : Bridge Technology &#x2122;</ion-label>
+        </ion-button>
+        </ion-buttons>
+      <ion-buttons slot="end">
+        <ion-button><ion-label>get Help ?</ion-label></ion-button>
+        <ion-button><ion-label>Continue Shopping</ion-label></ion-button>
+      </ion-buttons>
+    </ion-item>
+  </ion-toolbar>
+</ion-footer>

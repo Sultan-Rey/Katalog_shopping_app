@@ -1,7 +1,7 @@
 <ion-header mode="md">
   <ion-toolbar style=" --background: #031432;"> <!--Toolbar I-->
     <ion-buttons>
-      <ion-title (click)="routeTo('/home')" >
+      <ion-title class="taskbar" (click)="routeTo('/home')" >
         <ion-text style="font-size: 18px;"  size="small" color="warning">
           K</ion-text>
         <ion-text color="danger">
@@ -9,7 +9,7 @@
         </ion-text>
         <ion-text style="font-size: 18px;" color="light">TALOG</ion-text>
       </ion-title>
-      <div class="container">
+          <div class="container">
           <div class="input-group">
             <input type="text" [(ngModel)]="query"  (keypress)="search($event)"  id="searchField"  placeholder="Do you searching for something...?" debounce="500"
               style=" width: 10vw;  margin: 0 auto;" class="form-control" aria-describedby="basic-addon1">
@@ -29,7 +29,7 @@
               <ion-label *ngIf="cartLenght!=0" color="danger" >{{cartLenght}}</ion-label>
             </ion-tab-button>
         
-            <ion-tab-button (click)="routeTo('account')"  routerDirection="forward">
+            <ion-tab-button class="taskbar" (click)="routeTo('account')"  routerDirection="forward">
               <ion-icon color="light"  name="person-circle-outline"></ion-icon>
               <ion-label color="light" >Profil</ion-label>
             </ion-tab-button>

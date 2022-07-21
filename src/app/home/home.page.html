@@ -1,8 +1,9 @@
-<app-page-header></app-page-header>
-<ion-content [fullscreen]="true">
-  <div class="container-fluid" style="background: #031432;">  <!--Navigation-->
+<app-page-header></app-page-header> <!-- Header componnent selector -->
+
+<ion-content [fullscreen]="true"> <!-- current componnent main content area -->
+  <div class="container-fluid" style="background: #031432;"> 
     <div class="scrollmenu">
-      <a (click)="navigateTo(common)" *ngFor="let common of navigation">{{common}}</a> 
+      <a button (click)="navigateTo(common,'navigation_directive')" *ngFor="let common of navigation">{{common}}</a> 
     </div>
   </div>
 
@@ -17,7 +18,7 @@
 
     <ion-slides *ngIf="slides$ | async as slide" [options]="sliderOpts" >  <!-- Main Slideshow-->
       <ng-container *ngFor="let s of slide.slides">
-        <ion-slide *ngIf="s.version=='web'"  (click)="linkTo(s.direction, 'slide')" >
+        <ion-slide *ngIf="s.version=='web'"  (click)="navigateTo(s.direction, 'Results Found')" >
           <ion-img [src]="s.image" [alt]="slide.alt"></ion-img>
       </ion-slide>
       </ng-container>
@@ -28,41 +29,40 @@
   <div class="container-fluid p-4 overflow-hidden content-box">  <!-- Panel Division-->
     <div class="row g-4">
       <ng-container *ngFor="let panel of homepane$ | async">
-
         <div class="col-12 col-lg-4 col-md-6" *ngIf="panel.panelType=='box'&& panel.active==true">
           <div class="p-3 border" [ngStyle]="{'background': panel.panelName=='Advertising' ? 'none' : 'white'}">
             <h2>{{panel.description}}</h2>
             <div *ngIf="panel.panelName!=='category' && panel.panelName!=='brand'" class="row overflow-hidden"
               style="max-height: 400px;">
               <ng-container *ngIf="product$|async as _items; else skeleton">
-                <ng-container *ngFor="let item of product$|async">
+                <ng-container *ngFor="let item of _items">
                   <ion-label (click)="goTo(item)" *ngIf="item.display.position==panel.panelId" class="col-6" style="margin-bottom:15px">
-                    <ion-img style="width: 164px; height: 164px;" src="{{(item.models[0].pictures[0])}}"></ion-img>
+                    <ion-img  style="width: 164px; height: 164px;" [src]="item.models[0].pictures[0]"></ion-img>
                     <h6>{{item.name}}</h6>
                   </ion-label>
                 </ng-container>
               </ng-container>
             </div>
 
-            <div *ngIf="panel.panelName=='category'" class="row">
+            <div *ngIf="panel.panelName=='category'" style="max-height: 400px; overflow: hidden;" class="row">
               <ng-container *ngFor="let item of categories$|async">
-                <ion-label ion-button (click)="linkTo(item.categoryName, 'category')" class="col-6" style="margin-bottom:15px">
+                <ion-label ion-button (click)="navigateTo(item.categoryName, 'Results Found')" class="col-6" style="margin-bottom:15px">
                   <ion-img style="width: 164px; height: 164px;" src="{{(item.image)}}"></ion-img>
                   <h6>{{item.categoryName}}</h6>
                 </ion-label>
               </ng-container>
             </div>
 
-            <div *ngIf="panel.panelName=='brand'" class="row">
+            <div *ngIf="panel.panelName=='brand'" style="max-height: 400px; overflow: hidden;" class="row">
               <ng-container *ngFor="let item of brands$| async">
-                <ion-label (click)="linkTo(item.brandName, 'brand')" class="col-6" style="margin-bottom:15px">
+                <ion-label (click)="navigateTo(item.brandName, 'All from this brands')" class="col-6" style="margin-bottom:15px">
                   <ion-img style="width: 164px; height: 164px;" src="{{(item.logo)}}"></ion-img>
                   <h6>{{item.brandName}}</h6>
                 </ion-label>
               </ng-container>
             </div>
 
-            <ion-button fill="clear" (click)="navigateTo(panel.panelName)" color="primary">{{panel.buttonText}}
+            <ion-button fill="clear" (click)="navigateTo(panel.panelId, panel.panelName)" color="primary">{{panel.buttonText}}
             </ion-button>
           </div>
         </div>
@@ -72,33 +72,30 @@
             <h2 style="display:inline;">{{panel.description}}</h2>
             
             <div class="row" *ngIf="product$|async as _items; else slideSkeleton">
-              <div class="col-lg-1">
-                <ion-thumbnail  >
-                  <ion-img (click)="next(slideshow)" style="width: 25%;padding-top: 60%;" src="../../assets/icon/arrow_left_picsart.png"></ion-img>
-                </ion-thumbnail>
-              </div>
-              <div  class="col-lg-10">
-                <ion-slides #slideshow [options]="{ slidesPerView: '3.5', zoom: false, speed:'2000', loop:true, grabCursor: true }">
-                  <ng-container *ngFor="let common of product$ | async ">
-                    <ion-slide *ngIf="common.display.position == panel.panelId" (click)="goTo(common)"
-                      style="margin: 20px">
-                      <ion-item-group>
-                        <ion-img [src]="common.models[0].pictures[0]" style="max-height: 350px; max-width: 350px"></ion-img>
-                      <ion-label>{{common.caracteristic[0].price|currency}}</ion-label>
-                      </ion-item-group>
-                    </ion-slide>
-                  </ng-container>
-                  <ion-button fill="clear" *ngIf="panel.panelId=='best_seller'" color="primary">{{panel.buttonText}}
-                  </ion-button>
-                  <!-- <ion-button fill="clear" *ngIf="panel.panelId!=='best_seller'" color="primary">{{panel.buttonText}}
-                  </ion-button> -->
-                </ion-slides>
-              </div>
-              <div class="col-lg-1">
-                <ion-thumbnail (click)="prev(slides)">
-                  <ion-img style="width: 25%; padding-top: 60%;" src="../../assets/icon/PicsArt_06-29-09.39.05.png"></ion-img>
-                </ion-thumbnail>
-              </div>
+             <ion-buttons>
+              <ion-button (click)="prev(slideshow)">
+                <ion-icon slot="icon-only" name="chevron-back-circle-outline"></ion-icon>
+              </ion-button>
+           
+              <ion-slides #slideshow  style="width:100%" [options]="slidersOpts">
+                <ng-container *ngFor="let common of product$ | async ">
+                  <ion-slide *ngIf="common.display.position == panel.panelId" (click)="goTo(common)">
+                    <ion-item-group>
+                      <ion-img [src]="common.models[0].pictures[0]" style="height: 165px; width: 165px"></ion-img>
+                    <ion-label>{{common.caracteristic[0].price|currency}}</ion-label>
+                    </ion-item-group>
+                  </ion-slide>
+                </ng-container>
+              </ion-slides>
+            
+              <ion-button (click)="next(slideshow)">
+                <ion-icon slot="icon-only" name="chevron-forward-circle-outline"></ion-icon>
+              </ion-button>
+              </ion-buttons>  
+
+                <ion-button fill="clear" (click)="navigateTo(panel.panelId, panel.PanelName)" *ngIf="panel.panelId!=='best_seller'" color="primary">{{panel.buttonText}}
+                </ion-button>
+              
             </div>
            
           </div>
@@ -161,14 +158,12 @@
             </div>
           </div>
         </div>
-
       </ng-container>
     </div>
 
   </div>
 
-
-</ion-content>
+</ion-content> <!-- End current componnent main content area -->
 
 
 

@@ -13,6 +13,7 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { User } from 'src/models/user';
 import { CartItem } from 'src/models/cartItem';
+import { TypeofExpr } from '@angular/compiler';
 
 
 
@@ -40,11 +41,11 @@ export class PlaceOrderPage implements OnInit {
   deliverydate: Date;
   tracknum: string;
   method: string;
-  shippingfee = 0.00;
-  taxfee = 0.00;
-  deliveryfee = 0.00;
-  promotion = 0.00;
-  totalfee = 0.00;
+  shippingfee:number = 0;
+  taxfee:number = 0;
+  deliveryfee:number = 0;
+  promotion:number = 0;
+  totalfee = 0;
   constructor(private http: HttpClient, private pickerCtrl: PickerController, private route: ActivatedRoute,
      private loadingcontroller: LoadingController,private storage: Storage, private alertcontroller: AlertController,
       private router: Router, private afirestore: AngularFirestore, private fireAuth: AngularFireAuth,
@@ -70,9 +71,15 @@ export class PlaceOrderPage implements OnInit {
      this.data.items.map(product=>{this.deliveryfee+=product.deliveryFee;});
      this.data.items.map(product=>{this.taxfee+=product.taxFee;});
      this.data.items.map(product=>{this.deliverydate=this.calculateDeliveryDate(product.deliveryDate);})
+        const handlingFee = this.shippingfee + this.taxfee;
+        const chargeFee = this.taxfee + handlingFee;
+        this.totalfee = (chargeFee + this.amountOrder) - this.promotion;
+        console.log('Handling Fee : '+handlingFee);
+        console.log('Charge Fee : '+chargeFee);
+        console.log('total Fee : '+this.totalfee);
       }
       
-   
+     
 
       this.paymentRequest = {
         apiVersion: 2,
@@ -88,15 +95,15 @@ export class PlaceOrderPage implements OnInit {
               type:'PAYMENT_GATEWAY',
               parameters:{
                 gateway: 'example',
-                gatewayMerchantId: 'exampleGatewayMerchantId'
+                gatewayMerchantId: 'gatewayMerchantId'
               }
             },
           }
           
         ],
         merchantInfo:{
-          merchantId: '12345678901234567890',
-          merchantName: 'Example Merchant'
+          merchantId: 'BCR2DN4TVCSNNCTO',
+          merchantName: 'FASHION STAR BEAUTY'
         },
         transactionInfo:{
           countryCode: 'US',
@@ -104,7 +111,7 @@ export class PlaceOrderPage implements OnInit {
           totalPriceLabel: 'TOTAL ALL TAXES INCLUDES',
           totalPriceStatus: 'FINAL',
       // set to cart total
-          totalPrice: this.totalfee.toFixed(2)
+          totalPrice: "10.45"
         },
         shippingAddressRequired: true,
         shippingAddressParameters:{
@@ -120,11 +127,16 @@ export class PlaceOrderPage implements OnInit {
     async onLoadPaymentData(event: Event){
       const paymentData = (event as CustomEvent<google.payments.api.PaymentData>).detail;
       console.log(paymentData);
+      const navigationExtras: NavigationExtras = {
+        state: {
+          order: this.data,
+          transaction: paymentData
+        }
+      };
+      this.router.navigateByUrl(`confirm`,navigationExtras);
     }
 
-    calculCost(shippingfee: number,taxfee:number,deliveryfee:number,promotion:number, amount:number){
-      return this.totalfee = amount+shippingfee+deliveryfee+taxfee-promotion;
-    }
+    
 
   shipaddressChange(){
     this.collapse = !this.collapse;

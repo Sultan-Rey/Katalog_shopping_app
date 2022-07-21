@@ -8,7 +8,7 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { Displays } from 'src/models/display';
 import { isNullOrUndefined } from 'util';
 import { FirestoreDataService } from '../../firestore-data.service';
-import { IonImg } from '@ionic/angular';
+import { IonImg, ToastController } from '@ionic/angular';
 import { Order, Shipment } from 'src/models/order';
 import { CartItem } from 'src/models/cartItem';
 import { GooglePayButtonModule } from '@google-pay/button-angular';
@@ -17,7 +17,7 @@ import { Observable } from 'rxjs';
 import { Reviews } from 'src/models/reviews';
 import { Camera, CameraOptions } from '@awesome-cordova-plugins/camera/ngx';
 import { AngularFirestore } from '@angular/fire/firestore';
-import { first } from 'rxjs/operators';
+import { first, map } from 'rxjs/operators';
 import * as firebase from 'firebase';
 import { User } from 'src/models/user';
 
@@ -46,20 +46,40 @@ export class ProductPage implements OnInit {
   initialSize = '';
   orderQty = 1;
   searchQuery = '';
+  isLiked:boolean;
+  slidersOpts = {
+    zoom: true, 
+    breakpoints: {
+      // when window width is >= 320px
+      320: {
+        slidesPerView: 1,
+      },
+      // when window width is >= 820px
+      620: {
+        slidesPerView: 3,
+        spaceBetween: 10
+      },
+      // when window width is >= 9200px
+      820: {
+        slidesPerView: 5,
+        spaceBetween: 60
+      }
+    }
+  };
   constructor(private route: ActivatedRoute, private router: Router,private camera: Camera,
-     private afstore: AngularFirestore, private afAuth: AngularFireAuth,
+     private afstore: AngularFirestore, private afAuth: AngularFireAuth, private toastcontroller: ToastController,
      private firestoreData: FirestoreDataService, private storage: Storage, private angularefireSG: AngularFireStorage) {
     
   }
 
   ngOnInit() {
     this.data = {} as Product;
-    this.data.models = [];
-    this.router.url;
-    const queryParams = new globalThis.URLSearchParams(this.router.url.split("?")[1]);
-    const queryString = queryParams.get("productId");
+    this.data.models = [] ;
+    
+    const queryString:string = this.route.snapshot.params['kpuin'];
+    
     if(queryString!==null){
-      this.afstore.collection('product', q=>q.where("code","==",queryString))
+       this.afstore.collection('product', q=>q.where("code","==",queryString))
       .get().subscribe(item=>{
        const snap = item.docs[0];
        const product = snap.data() as Product;
@@ -71,11 +91,11 @@ export class ProductPage implements OnInit {
           this.initialColor = this.data.models[0].id;
           this.initialSize = this.data.size[0];
           this.browsingHistoric(this.data);
-       console.log(this.data);
+          
        
-     });
+     }); 
     }
-    console.log(this.data.code);
+    //console.log(this.data.code);
     
     
    
@@ -140,6 +160,37 @@ export class ProductPage implements OnInit {
     }
   }
 
+  
+
+  addInWishList(likeItem: Product){
+    let isAdded: boolean = false;
+    return this.storage.get("liked").then((liked: Product[]) => {
+      if (liked === null || liked.length === 0) {
+        liked = [];
+        liked.push(likeItem);
+      } else {
+        for (let items of liked) {
+          if (items === likeItem) {
+            items = likeItem;
+            isAdded = true;
+          }
+        }
+        if (!isAdded) {
+          liked.push(likeItem);
+        }
+      }
+      this.storage.set("liked", liked).then(async ()=>{
+        
+        const toast = await this.toastcontroller.create({
+          message :'item added in your wish list',
+          duration: 3,
+          keyboardClose: true,
+          translucent: true
+        })
+        await toast.present()
+      });
+    });
+  }
 
   addToCart(item: Product) {
     let isAdded: boolean = false;
@@ -249,18 +300,7 @@ export class ProductPage implements OnInit {
  } 
 
 
-  search(){
-    if(this.searchQuery!=='' || this.searchQuery!==null){
-      const navigationExtras: NavigationExtras = {
-        state: {
-          query: this.searchQuery
-        }
-      };
-     
-      this.router.navigate(['/searchquery'], navigationExtras);
-    }
-   
-  }
+ 
 
    async openLibrary() {
     const options: CameraOptions = {

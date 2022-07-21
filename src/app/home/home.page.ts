@@ -52,33 +52,42 @@ export class HomePage {
   };
 
   slidersOpts = {
-    loop: true,
-    slidesPerView: 2,
+    autoplay:true,
+    zoom: false, 
+    speed:'4000',
+    breakpoints: {
+      // when window width is >= 320px
+      320: {
+        slidesPerView: 1,
+      },
+      // when window width is >= 820px
+      620: {
+        slidesPerView: 2,
+        spaceBetween: 10
+      },
+      // when window width is >= 9200px
+      820: {
+        slidesPerView: 4,
+        spaceBetween: 100
+      }
+    }
   };
   
   numberOfMessage = 0;
 
-  //highlight icon in the header
-  slidersheading = {
-    loop: true,
-    slidesPerView: 5,
-  };
+
   
   constructor(private router: Router, private firestoreData: FirestoreDataService, private db: AngularFirestore,
               private storage: Storage, private navCtrl: NavController) {
                 this.connected = this.firestoreData.getConnexionState();
-                this.navigation = ["Buy by categories", "Wish List", "Recent Views","Today Deals","By Tomorrow", "Kindness", "Policy", "profil"];
-                //this.getBrowsingHistoric();
-                //this.getLikeItems();
-                //this.getSavedItems();
-                //this.slides = this.firebaseData.getSlidesDatabase();
+                this.navigation = ["Buy by categories", "Wish List", "Recent Views","Today Deals","Ready To Ship", "Our Brands"];
+                
                 this.product$ = this.firestoreData.getProducts();
                 this.homepane$ = this.firestoreData.getHomeDesign();
                 this.categories$ = this.firestoreData.getCategories();
                 this.brands$ = this.firestoreData.getBrands();
                 this.slides$ = this.firestoreData.getMainSlides();
-                //this.brands = this.firebaseData.getBrandsDatabase();
-                //this.hasToshow('best_seller');
+               
                
   }
 
@@ -86,9 +95,7 @@ export class HomePage {
   reload(){
     globalThis.location.reload();
   }
-  imgDidLoad(){
-    document.getElementById('img').style.display = "none";
-  }
+
   
   submitquery(contact: string, question:string){
     if(question!=='' && contact!==''){
@@ -139,93 +146,27 @@ var x = setInterval(function() {
 
   }
 
- /*  search(){
-    if(this.query!=='' || this.query!==null){
-      const navigationExtras: NavigationExtras = {
-        state: {
-          query: this.query
-        }
-      };
-     
-      this.router.navigate(['/searchquery'], navigationExtras);
+
+  navigateTo(args: string, extra?:string|'navigation_directive'){
+    if(args == 'Today Deals'){
+      extra = args;
+      args='p103'; //p103 is panelId string reference from collection homepane in firestore firebase
     }
-   
-  } */
-
-
-  getBrowsingHistoric(){
-    this.storage.get("browsing").then((historic:Product[])=>{
-        if(historic.length >4 && historic!==null){
-          this.browsing = [historic[0],historic[1],historic[historic.length-1],historic[2]]
-        }
-    }).catch(err=>{
-      console.log("no browsing data found");
-    });
-   return this.browsing;
-  }
-
-  getLikeItems(){
-    this.storage.get("likeItem").then((liked:Product[])=>{
-      if(liked.length!==0 && liked!==null){
-        this.likeItem = liked;
-      }
-      
-    }).catch(err=>{
-      console.log("no like items data found");
-    });
-   return this.likeItem;
-  }
-
-  getSavedItems(){
-    this.storage.get("savedforlater").then((saved:CartItem[])=>{
-        if(saved.length!==0 && saved!==null){
-          for(let savedItem of saved){
-            this.savedItem.push(savedItem);
-          }
-        }
-    }).catch(err=>{
-      console.log("no saved items data found");
-    });
-   return this.savedItem;
-  }
-
-/*
-* Drop to link with data transfer
-*/
-
-  navigateTo(route: string){
-    if(route!=='Kindness' && route!=='Policy' && route!=='Profil'){
-      const navigationExtras: NavigationExtras = {
-        state: {
-          direction: route
-        }
-      };
-      this.router.navigate(['/historic'], navigationExtras);
-    }else if(route=='Kindness' ){
-      this.navCtrl.navigateForward('/helpcenter');
+    if(args == 'Ready To Ship'){
+      extra = args;
+      args='p105'; 
     }
-    else if(route=='Policy' ){
-      this.navCtrl.navigateForward('/policy');
-    }
-    else if(route=='Profil' ){
-      this.navCtrl.navigateForward('/account');
-    }
-    
-    
-  }
-  
-  linkTo(param: string, optional:string){
     const navigationExtras: NavigationExtras = {
       state: {
-        item: param,
-        option: optional
+        direction: extra
       }
     };
-    this.router.navigate(['/categories'], navigationExtras);
+    this.router.navigateByUrl(`categories/${args}`,navigationExtras);
   }
+ 
 
   goTo(item: any): void {
-    this.navCtrl.navigateForward("/product?productId="+item.code);
+    this.navCtrl.navigateForward(`product/${item.code}`);
   }
 
   

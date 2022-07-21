@@ -1,20 +1,21 @@
 <app-page-header></app-page-header>
+<ion-progress-bar *ngIf="data.code==undefined" type="indeterminate"></ion-progress-bar>
 <ion-content>
 
-  <div class="container-fluid">
-    <ion-progress-bar *ngIf="data.code==undefined" type="indeterminate"></ion-progress-bar>
+  <div class="container-fluid p-2 overflow-hidden">
+    
     <div class="row g-2" *ngIf="data.code!==undefined">
 
-      <div class="col-md-6 col-lg-4 bg-white">
+      <div class="col-md-6 col-lg-5 bg-white">
         <div class="row">
-          <div *ngIf="data" class="col-lg-3 col-md-4 col-12">
+          <div *ngIf="data" class="col-lg-2 col-md-4 col-12">
             <ion-list>
               <ion-thumbnail (click)="setColor(model.id)"  [id]="model.id" class="border mt-1" *ngFor="let model of data.models">
                 <ion-img  [src]="model.pictures[0]"></ion-img>
               </ion-thumbnail>
             </ion-list>
           </div>
-          <div class="col-lg-9 col-md-8 col-12">
+          <div class="col-lg-10 col-md-8 col-12">
             <ion-slides pager="true" [options]="{ zoom: true, grabCursor: true }" >
               <ion-slide *ngFor="let model of dynamicPictures">
                 <img #image id="image" 
@@ -30,30 +31,26 @@
           </div>
         </div>
       </div>
-
-      <div class="col-md-6 col-lg-5 p-4 bg-white">
+ 
+      <div class="col-md-6 col-lg-4 p-4 bg-white">
         <div class="row">
           
           <div class="col-md-10 col-lg-8">
             <h6>{{data.name}}</h6>
           </div>
           <div class="col-md-2 col-lg-4"> 
-            <ion-icon color="warning" name="star" *ngIf="data.rating>0"></ion-icon>
-            <ion-icon color="warning" name="star" *ngIf="data.rating>1"></ion-icon>
-            <ion-icon color="warning" name="star" *ngIf="data.rating>2"></ion-icon>
-            <ion-icon color="warning" name="star" *ngIf="data.rating>3"></ion-icon>
-            <ion-icon color="warning" name="star" *ngIf="data.rating>4"></ion-icon>
+            <ion-icon *ngFor=" let star of [].constructor(data.rating)" name="star" color="warning" size="small"></ion-icon>
           </div>
           <p>{{data.description}}</p>
         </div>
-        <div class="row col-md-12 col-12 p-4 bg-white" >
+        <div class="container col-md-12 col-12 p-2 bg-white" >
             <h6><b>Size :</b></h6>
-          <ion-row >
-            <ion-slides [options]="{ slidesPerView: '3', zoom: false, grabCursor: true }">
-              <ion-slide *ngFor="let size of data.size">
-                <ion-button (click)="setSize(size)" color="medium" [id]="size">{{size}}</ion-button></ion-slide>
-            </ion-slides>
-          </ion-row>
+            <div class="scrollmenu">
+              <a [id]="size" (click)="setSize(size)" *ngFor="let size of data.size">
+                <button type="button" class="btn btn-dark">{{size}}</button>
+              </a>
+            </div>
+         
         </div>
         <div class="row">
           <ion-item>
@@ -67,56 +64,81 @@
         </div>
       </div>
 
-      <div class="col-md-12 col-lg-3 col-12 border rounded p-4 bg-white">
-        <ion-item lines="none">
-          <ion-label slot="start"><h2><b>{{dynamicPrice | currency}}</b></h2></ion-label>
-          <ion-item-group slot="end">
-            <ion-label>
-              <div class="qty-selector">
-                <ion-button  fill="clear" (click)="adjustqty('minus')">-</ion-button>
-                <ion-label>{{orderQty}}</ion-label>
-                <ion-button fill="clear" (click)="adjustqty('plus')">+</ion-button>
-              </div>
-              <ion-label *ngIf="dynamicQty<10 && dynamicQty>1"><h6>Only {{dynamicQty}} left</h6></ion-label>
-            </ion-label>
-            <ion-label>
-    
-            </ion-label>
-          </ion-item-group>
-        </ion-item>
-            <ion-item-group>
-              <ion-item lines="none">
-                <ion-item-group>
-                  <h6>get it by <b>{{data.deliveryDate | date}}</b></h6>
-                  <h6>Ship from {{data.shipment}}</h6>
-                  <p style="font-size: 14px" class="text-muted">Over 50$ buy, shipping fee are not considered for US customers</p>
-                  <small class="text-info">
-                      <ion-text *ngIf="data.shippingFee== 0">Free shipping,</ion-text>
-                      <ion-text *ngIf="data.deliveryFee== 0">free delivery,</ion-text>
-                      <ion-text *ngIf="!data.policy">but no return allowed</ion-text> 
-                      <ion-text *ngIf="data.policy">and free return</ion-text>
-                  </small>
-                </ion-item-group>
-              </ion-item>
-              <ion-item lines="none"></ion-item>
-              <ion-button (click)="authorized(data)" expand="block"  color="tertiary">Buy Now</ion-button>
-              <ion-button (click)="addToCart(data)" expand="block" color="warning">Add To Cart</ion-button>
+      <div class="position-relative col-md-12 col-lg-3 col-12 bg-white">
+        <div class="position-absolute border rounded p-4">
+          <ion-item lines="none">
+            <ion-label slot="start"><h2><b>{{dynamicPrice | currency}}</b></h2></ion-label>
+            <ion-item-group slot="end">
+              <ion-label>
+                <div class="qty-selector">
+                  <ion-button  fill="clear" (click)="adjustqty('minus')">-</ion-button>
+                  <ion-label>{{orderQty}}</ion-label>
+                  <ion-button fill="clear" (click)="adjustqty('plus')">+</ion-button>
+                </div>
+                <ion-label *ngIf="dynamicQty<10 && dynamicQty>1"><h6>Only {{dynamicQty}} left</h6></ion-label>
+              </ion-label>
+              <ion-label>
+      
+              </ion-label>
             </ion-item-group>
+          </ion-item>
+              <ion-item-group>
+                <ion-item lines="none">
+                  <ion-item-group>
+                    <h6>get it by <b>{{data.deliveryDate | date}}</b></h6>
+                    <h6>Ship from {{data.shipment}}</h6>
+                    <p style="font-size: 14px" class="text-muted">Over 50$ buy, shipping fee are not considered for US customers</p>
+                    <h6 class="text-info">
+                        <ion-text *ngIf="data.shippingFee== 0">Free shipping,</ion-text>
+                        <ion-text *ngIf="data.deliveryFee== 0">free delivery,</ion-text>
+                        <ion-text *ngIf="!data.policy">but no return allowed</ion-text> 
+                        <ion-text *ngIf="data.policy">and free return</ion-text>
+                    </h6>
+                  </ion-item-group>
+                </ion-item>
+               
+                <ion-button (click)="authorized(data)"  expand="block"  color="tertiary">Buy Now</ion-button>
+                <ion-button (click)="addToCart(data)" expand="block" color="warning">Add To Cart</ion-button>
+                <div style="margin-top: 20px;">
+                  
+                  <h6>
+                    <ion-icon color="danger" slot="start" name="warning-outline"></ion-icon>
+                    return will not be accepted with label is removed, 
+                    you cannot return an item after 15 days delays.
+                  </h6>
+                </div>
+                <div style="margin-top: 20px;" class="row">
+                  <div class="col-lg-4 col-12 col-md-9">
+                    <ion-badge color="dark" (click)="addInWishList(data)">
+                      <small>Save in Favorites
+                      </small>
+                      <ion-icon color="danger" name="heart-outline"></ion-icon>
+                    </ion-badge>
+                  </div>
+                  <div class="col-lg-3 col-12 col-md-12"></div>
+                  <div class="col-lg-5 col-12 col-md-3">
+                      <ion-buttons>
+                        <small>Favorites List</small>
+                        <ion-icon name="chevron-forward-outline"></ion-icon>
+                      </ion-buttons>
+                  </div>
+                 
+                </div>
+              </ion-item-group>
+        </div>
+       
       </div>
      
     
       <div *ngIf="similar$|async as _items" class="col-md-12 col-12 col-lg-12 p-3 bg-white">
         <h2>You might considered those </h2>
-        <ion-grid>
-          <ion-row>
-            <ion-col size="1">
-               <ion-img (click)="next(slides)" src="../../../assets/icon/arrow-left.png" style="
-               padding-top: 60%;
-               width: 40%;"
-               ></ion-img>
-            </ion-col>
-            <ion-col size="10">
-              <ion-slides #slides [options]="{ slidesPerView: '4', zoom: false, grabCursor: true }">
+        <div class="row">
+          <ion-buttons>
+            <ion-button (click)="prev(slides)">
+              <ion-icon slot="icon-only" name="chevron-back-circle-outline"></ion-icon>
+            </ion-button>
+          
+              <ion-slides #slides style="width: 100%;" [options]="{ slidesPerView: '4', zoom: false, grabCursor: true }">
                 <ion-slide *ngFor="let item of _items" >
                   <div>
                     <ion-card-content  style="padding-bottom: 0;"  >
@@ -128,7 +150,7 @@
                         <h5 class="text-muted">{{item.name}}</h5>
                       </ion-text>
                       <ion-card-title>
-                        <ion-item>
+                        <ion-item lines="none">
                           <ion-label  color="dark">
                             {{item.caracteristic[0].price|currency}}
                           </ion-label>
@@ -143,20 +165,27 @@
                   </div>
               </ion-slide>
               </ion-slides>
-            </ion-col>
-            <ion-col size="1">
-              <ion-img (click)="prev(slides)" src="../../../assets/icon/arrow-right.png" style="
-              padding-top: 60%;
-              width: 40%;"></ion-img>
-            </ion-col>
-          </ion-row>
-        </ion-grid>
+          
+            <ion-button (click)="next(slides)">
+              <ion-icon slot="icon-only" name="chevron-forward-circle-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+        </div>
       
       </div>
     
-      <div class="col-md-12 col-lg-12 col-12 bg-white">
+      <div class="col-md-12 col-lg-12 col-12 p-3 bg-white">
         <ng-container *ngIf="data.models.length>0">
-          <ion-img *ngFor="let model of data.models" [src]="model.pictures[0]"></ion-img>
+          <h2>Manufacturer Image </h2>
+          <div class="container">
+            <div class="row g-3">
+              <div *ngFor="let model of data.models"  class="border p-2">
+                <ion-img class="img-fluid" [src]="model.pictures[0]"></ion-img>
+              </div>
+            </div>
+           
+          </div>
+          
         </ng-container>
         </div>
     

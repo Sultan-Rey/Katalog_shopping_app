@@ -12,11 +12,11 @@ const routes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'categories',
+    path: 'categories/:query_args',
     loadChildren: () => import('./category/categories/categories.module').then( m => m.CategoriesPageModule)
   },
   {
-    path: 'product',
+    path: 'product/:kpuin',
     loadChildren: () => import('./products/product/product.module').then( m => m.ProductPageModule)
   },
   {
@@ -53,24 +53,12 @@ const routes: Routes = [
     loadChildren: () => import('./account/account.module').then( m => m.AccountPageModule)
   },
   {
-    path: 'historic',
-    loadChildren: () => import('./historic/historic.module').then( m => m.HistoricPageModule)
-  },
-  {
-    path: 'starcard',
-    loadChildren: () => import('./starcard/starcard.module').then( m => m.StarcardPageModule)
-  },
-  {
     path: 'confirm',
     loadChildren: () => import('./confirm/confirm.module').then( m => m.ConfirmPageModule)
   },
   {
     path: 'order-details',
     loadChildren: () => import('./order-details/order-details.module').then( m => m.OrderDetailsPageModule)
-  },
-  {
-    path: 'searchquery',
-    loadChildren: () => import('./searchquery/searchquery.module').then( m => m.SearchqueryPageModule)
   },
   {
     path: 'policy',

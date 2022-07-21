@@ -8,6 +8,7 @@ import { ControlContainer } from '@angular/forms';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { User } from 'src/models/user';
 import { isNullOrUndefined } from 'util';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 
 
 @Component({
@@ -22,20 +23,70 @@ export class LoginPage implements OnInit {
     mail: '',
     password: ''
   };
-  data: Order|'';
-  returnway: '/home';
+  data: Order|any;
+  status: string
+  passwordForm = this.formBuilder.group({
+    old: ['', [Validators.required, Validators.minLength(8), Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$')]],
+    new: ['', [Validators.required, Validators.minLength(8), Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$')]]
+  });
+
+  public errorMessages = {
+    password: [
+      { type: 'required', message: 'Password is fully required' },
+      { type: 'pattern', message: 'Password must be at least 8 characters with digits and uppercase' }
+    ]
+  }
+
   constructor(private route: ActivatedRoute, private router: Router, private storage: Storage,
-              private afAuth: AngularFireAuth, private loadingcontroller: LoadingController,
-              private alertcontroller: AlertController, private afirestore: AngularFirestore) { }
+              private afAuth: AngularFireAuth, private loadingcontroller: LoadingController,private afstore: AngularFirestore,
+              private alertcontroller: AlertController, private formBuilder: FormBuilder,private fireauth: AngularFireAuth) { }
 
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       if (this.router.getCurrentNavigation().extras.state) {
         this.data = this.router.getCurrentNavigation().extras.state.order;
-        this.returnway = this.router.getCurrentNavigation().extras.state.route;
+        this.status = this.router.getCurrentNavigation().extras.state.status;
       }
     });
   }
+
+  getOldPassword() {
+    return this.passwordForm.get('old');
+  }
+  getNewPassword() {
+    return this.passwordForm.get('new');
+  }
+
+/*   async submit() {
+    let correctpass:boolean=false;
+    let userId= (await this.fireauth.currentUser).uid;
+    this.afstore.collection('user').doc(userId).get().subscribe(obs=>{
+      if(this.passwordForm.value.old == obs.get('password')){
+        correctpass = true;
+      }
+      
+    });
+    if(correctpass){
+      this.fireauth.currentUser.then((user)=>{ 
+        user.updatePassword(this.passwordForm.value.new);}).then(async ()=>{
+          const loading = await this.loadingcontroller.create({
+            cssClass: 'my-custom-class',
+            message: 'Please wait...',
+            duration: 2000
+          }).then((loaded)=>{
+            loaded.present();
+            loaded.onDidDismiss().then((dismiss)=>{
+              this.passwordForm.value.new=null;
+              this.passwordForm.value.old=null;
+              console.log(dismiss);
+              });
+          });
+        });
+    }else{
+      this.passwordForm.value.new=null;
+              this.passwordForm.value.old=null;
+    }
+    } */
 
   async login(data: any){
     
@@ -50,6 +101,7 @@ export class LoginPage implements OnInit {
           this.dataUser = {mail: '',password: ''};
             
             if((await this.afAuth.currentUser).emailVerified){
+
               this.storage.set("user", (await this.afAuth.currentUser).uid.toString())
               const navigationExtras: NavigationExtras = {
                 state: {
@@ -71,9 +123,9 @@ export class LoginPage implements OnInit {
           if(load.role =="alert"){
             const alert = await this.alertcontroller.create({
               cssClass: 'my-custom-class',
-              header: 'Alert',
-              subHeader: 'Network Error',
-              message: 'Login failed'+load.data,
+              header: 'Sign In alert',
+              subHeader: 'Login Failed',
+              message: 'Password or username incorrect',
               buttons: ['Ok']
             });
             await alert.present();

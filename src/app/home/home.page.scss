@@ -31,7 +31,7 @@ ion-content{
 
 .content-box{
   position: absolute;
-  top: 430px;
+  top: 350px;
   z-index: 1;
   padding-bottom: 80px;
   h6{
@@ -41,6 +41,15 @@ ion-content{
     -webkit-box-orient: vertical;
   }
 
+}
+@media (max-width: 668px) {
+  .content-box {
+    top: 280px;
+  }
+  .content-box ion-img{
+    padding: 15%;
+  }
+  
 }
 
 div.scrollmenu {

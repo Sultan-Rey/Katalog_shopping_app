@@ -21,26 +21,25 @@ export class CartPage implements OnInit {
   cart: CartItem[] = [];
   saved: CartItem[] = [];
   isOnline: boolean = false;
-  nosaved: boolean;
+ 
   orderQty: number = 0;
   totalcost: number = 0.00;
 
   constructor(private toastconroller: ToastController, private router: Router, private fstoreService: FirestoreDataService, private storage: Storage) {
     this.getsavedforlater(); 
     this.getCartItems();
-    this.getBrowsingHistoric();
+    console.log(this.getBrowsingHistoric());
   }
 
   ngOnInit() {
-    this.nosaved = false;
+    this.isOnline = this.fstoreService.getConnexionState();
   }
 
 
   checkForCartUpdate() {
     let arr2 = this.fstoreService.getFirestoreData();
     const res1 = arr2.filter((item1) => !this.cart.find(item2 => item1.description === item2.description))
-    console.log(res1)
-    console.log(arr2);
+    
 
   }
 
@@ -57,10 +56,10 @@ export class CartPage implements OnInit {
   getsavedforlater() {
     this.storage.get("savedforlater").then((data: CartItem[]) => {
       this.saved = data;
-      this.nosaved = false;
+     
     }).catch(err => {
       console.log("saved not found or empty");
-      this.nosaved = true;
+      
     });
 
   }
@@ -134,10 +133,12 @@ export class CartPage implements OnInit {
             saved.push(tosaved);
           }
         }
-        this.storage.set("savedforlater", saved);
+        this.storage.set("savedforlater", saved).then(()=>{
+          this.getsavedforlater();
+        });
       })
     }
-    this.getsavedforlater();
+    
   }
 
   remove(item: CartItem) {

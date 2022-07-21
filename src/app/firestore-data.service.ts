@@ -66,7 +66,7 @@ export class FirestoreDataService {
   }
 
   getCategories(){
-    this.categoriesCollection = this.afs.collection('categories', q=>q.orderBy("categoryName","asc").limit(4));
+    this.categoriesCollection = this.afs.collection('categories', q=>q.orderBy("categoryName","asc"));
     this.category = this.categoriesCollection.valueChanges();
     return this.category; 
   }
@@ -122,10 +122,7 @@ export class FirestoreDataService {
           status: e.status,
           availability: e.availability,
           display: e.display
-        });
-        
-      
-          
+        }); 
 
       });
 

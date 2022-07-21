@@ -3,14 +3,81 @@
 <ion-content>
  
 
-    <div class="container-fluid">
+    <div class="container-fluid p-4  overflow-hidden content-box">
      
-      <ion-grid>
-        <ion-row>
-          <ion-col size="6" *ngFor="let item of product$| async">
+      <div class="row g-4">
+        <div class="col-6 col-lg-4 col-md-6" *ngFor="let item of product$| async">
+          <div class="border p-2" >
+            
               <ion-card-content (click)="goTo(item)" style="padding-bottom: 0;"  >
-                <ion-img style="box-sizing:border-box;" (click)="goTo(item)" [src]="item.models[0].pictures[0]"></ion-img>
-              </ion-card-content>
+                <ion-slide>
+                  <ion-img style="box-sizing:border-box; width: 165px; height: 165px;"   (click)="goTo(item)" [src]="item.models[0].pictures[0]"></ion-img>
+                </ion-slide>
+                  </ion-card-content>
+              <ion-card-header >
+                <ion-text color="dark">
+                  <h6  style="font-size: 13px; font-weight: bold;" (click)="goTo(item)">{{item.description}}</h6>
+                </ion-text>
+                <p>
+                
+                  <ion-icon *ngFor="let star of [].constructor(item.rating)" name="star"></ion-icon>
+                </p>
+                <ion-card-subtitle  >{{item.name}}</ion-card-subtitle>
+              </ion-card-header>
+  
+              <ion-card-title>
+                <ion-item lines="none">
+                  <ion-label (click)="goTo(item)" color="dark">
+                    {{item.caracteristic[0].price|currency}}
+                  </ion-label>
+                  <div style="text-align:center; max-width: 36px; max-height: 19.188px; overflow: hidden;">
+                    <div class="circle" *ngFor="let color of item.caracteristic">
+                      <span class="dot" *ngIf="color.color!==''" [style.background]="color.color"></span>
+                    </div>
+                  </div> 
+                  </ion-item>
+              </ion-card-title>
+             
+          </div>
+        </div>
+
+        <div class="col-6 col-lg-4 col-md-6" *ngFor="let brand of brands$| async">
+          <div class="border p-3" >
+              <ion-card-content (click)="goTo(brand)" style="padding-bottom: 0;"  >
+                <ion-slide>
+                  <ion-img style="box-sizing:border-box; max-width: 225px; max-height: 225px;"   (click)="goTo(brand)" [src]="brand.logo"></ion-img>
+                </ion-slide>
+                  </ion-card-content>
+              <ion-card-header >
+                <ion-card-subtitle  >{{brand.brandName}}</ion-card-subtitle>
+                <ion-card-title>{{brand.slogan | titlecase}}</ion-card-title>
+              </ion-card-header>
+          </div>
+          
+        </div>
+
+        <div class="col-6 col-lg-4 col-md-6" *ngFor="let categ of categories$| async">
+          <div class="border p-3" >
+              <ion-card-content (click)="goTo(categ)" style="padding-bottom: 0;"  >
+                <ion-slide>
+                  <ion-img style="box-sizing:border-box; max-width: 308; max-height: 205px;"   (click)="goTo(categ)" [src]="categ.image"></ion-img>
+                </ion-slide>
+                  </ion-card-content>
+              <ion-card-header >
+                <ion-card-subtitle  >{{categ.categoryName}}</ion-card-subtitle>
+              </ion-card-header>
+          </div>
+          
+        </div>
+
+        <div class="col-6 col-lg-4 col-md-6" *ngFor="let item of items">
+          <div class="border p-3" >
+            
+              <ion-card-content (click)="goTo(item)" style="padding-bottom: 0;"  >
+                <ion-slide>
+                  <ion-img style="box-sizing:border-box; width: 165px; height: 165px;"   (click)="goTo(item)" [src]="item.models[0].pictures[0]"></ion-img>
+                </ion-slide>
+                  </ion-card-content>
               <ion-card-header >
                 <ion-text color="dark">
                   <h6  style="font-size: 13px; font-weight: bold;" (click)="goTo(item)">{{item.description}}</h6>
@@ -19,7 +86,7 @@
               </ion-card-header>
   
               <ion-card-title>
-                <ion-item>
+                <ion-item lines="none">
                   <ion-label (click)="goTo(item)" color="dark">
                     {{item.caracteristic[0].price|currency}}
                   </ion-label>
@@ -29,19 +96,17 @@
                     </div>
                   </div> 
                   <ng-container *ngFor="let likeitem of likeItems">
-                    <ion-icon  (click)="putItemInWishList(item)" size="small" color="danger" slot="end" [name]="item.description == likeitem.description? 'heart-outline':'heart'"></ion-icon>
+                    <ion-icon [id]="item.description"  *ngIf="likeitem.description == item.description"  size="small" color="danger" slot="end" name="heart"></ion-icon>
                   </ng-container>
-                  <ion-icon  *ngIf="likeItems==undefined || likeItems.length==0" size="small" color="danger" slot="end" name="heart-outline"></ion-icon>
-                </ion-item>
+                     </ion-item>
               </ion-card-title>
-          </ion-col>
+             
+          </div>
           
-        </ion-row>
-
-      </ion-grid>
+        </div>
+      </div>
     </div>
 
  
 
 </ion-content>
-<app-page-footer></app-page-footer>
